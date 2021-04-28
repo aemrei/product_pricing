@@ -1,16 +1,7 @@
-import { Pane } from "evergreen-ui"
-import HomeNav from "../components/HomeNav"
-import styles from '../styles/Home.module.css'
+import { Text } from "evergreen-ui"
 
 export default function Home() {
   return (
-    <Pane>
-      <header>
-        <HomeNav/>
-      </header>
-      <main>
-        <span>Body</span>
-      </main>
-    </Pane>
+    <Text>Body</Text>
   )
 }

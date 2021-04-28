@@ -2,7 +2,7 @@ import React from 'react'
 import { Pane } from 'evergreen-ui'
 
 const Container = ({ children, ...styles }) => (
-  <Pane maxWidth="960px" marginX="auto" width="100%" {...styles}>
+  <Pane maxWidth="1080px" marginX="auto" width="100%" {...styles}>
     {children}
   </Pane>
 )
