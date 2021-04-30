@@ -1,7 +1,9 @@
-import { Text } from "evergreen-ui"
+import styles from '../styles/Home.module.css'
 
 export default function Home() {
   return (
-    <Text>Body</Text>
+    <div className={styles.container}>
+      Demo
+    </div>
   )
 }

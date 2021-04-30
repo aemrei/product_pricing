@@ -1,16 +1,28 @@
-
-import { Provider } from 'next-auth/client'
-import HomeNav from "../components/HomeNav";
-import MainContent from "../components/MainContent";
+import Head from 'next/head'
 import '../styles/globals.css'
+import 'semantic-ui-css/semantic.min.css'
+import HeaderBar from "../components/HeaderBar"
+import { Provider } from 'next-auth/client'
+import {
+  Container,
+  Divider,
+} from "semantic-ui-react"
 
 function MyApp({ Component, pageProps }) {
+
   return (
     <Provider session={pageProps.session}>
-      <HomeNav/>
-      <MainContent>
-        <Component {...pageProps} />
-      </MainContent>
+      <Head>
+        <title>Product Pricing</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <HeaderBar/>
+      <main>
+        <Container text style={{ marginTop: '4em' }}>
+          <Component {...pageProps} />
+        </Container>
+      </main>
+      <Divider/>
     </Provider>
   );
 }
