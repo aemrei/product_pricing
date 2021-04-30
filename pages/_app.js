@@ -7,6 +7,7 @@ import {
   Container,
   Divider,
 } from "semantic-ui-react"
+import Authorized from "../components/Authorized"
 
 function MyApp({ Component, pageProps }) {
 
@@ -19,7 +20,9 @@ function MyApp({ Component, pageProps }) {
       <HeaderBar/>
       <main>
         <Container text style={{ marginTop: '4em' }}>
-          <Component {...pageProps} />
+          <Authorized>
+            <Component {...pageProps} />
+          </Authorized>
         </Container>
       </main>
       <Divider/>
