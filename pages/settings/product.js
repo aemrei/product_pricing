@@ -21,7 +21,7 @@ export default function ProductPage({products}){
         <Table.Body>
         {
           products.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>{e.text}</Table.Cell>
               <Table.Cell>
                 <Input label={e.currency} defaultValue={e.price}/>

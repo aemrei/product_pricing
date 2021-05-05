@@ -22,7 +22,7 @@ export default function UserPage({userFees}){
         <Table.Body>
         {
           userFees.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>
               <Input defaultValue={e.lowerLimit}/>
               </Table.Cell>

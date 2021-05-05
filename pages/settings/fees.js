@@ -21,7 +21,7 @@ export default function FeePage({fees}){
         <Table.Body>
         {
           fees.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>{e.text}</Table.Cell>
               <Table.Cell>
                 <Input label={e.icon} defaultValue={e.value}/>

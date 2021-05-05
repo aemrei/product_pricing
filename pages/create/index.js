@@ -28,7 +28,7 @@ const Create = ({countries, modules }) => {
           <Table.Body>
           {
             modules.map(m =>
-              <Table.Row key={m.key}>
+              <Table.Row key={m._id}>
                 <Table.Cell collapsing>
                   {!m.readOnly && <Checkbox slider readOnly={m.readOnly}/>}
                 </Table.Cell>

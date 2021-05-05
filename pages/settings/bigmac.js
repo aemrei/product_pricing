@@ -20,7 +20,7 @@ export default function BigMacPage({countryBigMac}){
         <Table.Body>
         {
           countryBigMac.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>{e.text}</Table.Cell>
               <Table.Cell>{e.dollar_ratio}</Table.Cell>
               <Table.Cell>{e.euro_ratio}</Table.Cell>

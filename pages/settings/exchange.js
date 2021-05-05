@@ -19,7 +19,7 @@ export default function ExchangeRatePage({exchangeRates}){
         <Table.Body>
         {
           exchangeRates.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>{e.text}</Table.Cell>
               <Table.Cell>{e.rate}</Table.Cell>
             </Table.Row>

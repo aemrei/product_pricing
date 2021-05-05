@@ -39,7 +39,7 @@ export default function InterfacePage({interfaceFees}){
         <Table.Body>
         {
           interfaceFees.map(e =>
-            <Table.Row key={e.key}>
+            <Table.Row key={e._id}>
               <Table.Cell>
               <Input defaultValue={e.lowerLimit}/>
               </Table.Cell>
