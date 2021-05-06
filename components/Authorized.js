@@ -9,14 +9,14 @@ const Authorized = ({ children, ...styles }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!session && router.route !== "/") {
+    if (!loading && !session && router.route !== "/") {
       router.push('/');
     }
-  }, [session, router]);
+  }, [session, router, loading]);
 
   return (
     <Container>
-      {session ? children : <span>Please login</span>}
+      {loading ? <span>Please wait...</span> : session ? children : <span>Please login</span>}
     </Container>
   );
 }

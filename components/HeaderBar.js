@@ -34,46 +34,64 @@ const HeaderBar = () => {
   }
 
   return (
-    <Menu fixed='top' inverted>
+    <Menu fixed="top" inverted>
       <Container>
-        <GoToHome/>
+        <GoToHome />
 
         <NextLink href="/create" passHref>
-          <Menu.Item as='a' header>
+          <Menu.Item as="a" header>
             Create
           </Menu.Item>
         </NextLink>
 
-        <Dropdown item simple text='Settings'>
+        <Dropdown item simple text="Settings">
           <Dropdown.Menu>
             <NextLink href="/settings/product" passHref>
-              <Dropdown.Item as="a"><Icon name="cart"/>Product Prices</Dropdown.Item>
+              <Dropdown.Item as="a">
+                <Icon name="cart" />
+                Product Prices
+              </Dropdown.Item>
             </NextLink>
             <NextLink href="/settings/interface" passHref>
-              <Dropdown.Item as="a"><Icon name="connectdevelop"/>Interface Prices</Dropdown.Item>
+              <Dropdown.Item as="a">
+                <Icon name="connectdevelop" />
+                Interface Prices
+              </Dropdown.Item>
             </NextLink>
             <NextLink href="/settings/user" passHref>
-              <Dropdown.Item as="a"><Icon name="users"/>User Prices</Dropdown.Item>
+              <Dropdown.Item as="a">
+                <Icon name="users" />
+                User Prices
+              </Dropdown.Item>
             </NextLink>
-            <NextLink href="/settings/fees" passHref>
-              <Dropdown.Item as="a"><Icon name="money"/>Other Fees</Dropdown.Item>
+            <NextLink href="/settings/fee" passHref>
+              <Dropdown.Item as="a">
+                <Icon name="money" />
+                Other Fees
+              </Dropdown.Item>
             </NextLink>
             <Dropdown.Divider />
             <NextLink href="/settings/bigmac" passHref>
               <Dropdown.Item as="a">🍔🍔 BigMac Index</Dropdown.Item>
             </NextLink>
             <NextLink href="/settings/exchange" passHref>
-              <Dropdown.Item as="a"><Icon name="eur"/>Exchange Rates</Dropdown.Item>
+              <Dropdown.Item as="a">
+                <Icon name="eur" />
+                Exchange Rates
+              </Dropdown.Item>
             </NextLink>
           </Dropdown.Menu>
         </Dropdown>
-        <Menu.Item position='right'>
-          <span style={{marginRight:"1rem"}}>{session.user.name}</span>
-          <Button primary onClick={()=>signOut()}><Icon name="log out"/>Log Out</Button>
+        <Menu.Item position="right">
+          <span style={{ marginRight: "1rem" }}>{session.user.name}</span>
+          <Button primary onClick={() => signOut()}>
+            <Icon name="log out" />
+            Log Out
+          </Button>
         </Menu.Item>
       </Container>
     </Menu>
-  )
+  );
 }
 
 export default HeaderBar;

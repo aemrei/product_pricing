@@ -6,9 +6,10 @@ import {
   Table,
 } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
-import { getCountries, getProducts } from "../../db/settings";
+import { connectToDB } from "../../db";
+import { getCountries, getProductSettings } from "../../db/settings";
 
-const Create = ({countries, modules }) => {
+const Create = ({countries, products }) => {
   return (
     <Container>
       <Form>
@@ -27,13 +28,13 @@ const Create = ({countries, modules }) => {
           </Table.Header>
           <Table.Body>
           {
-            modules.map(m =>
+            products.map(m =>
               <Table.Row key={m._id}>
                 <Table.Cell collapsing>
                   {!m.readOnly && <Checkbox slider readOnly={m.readOnly}/>}
                 </Table.Cell>
                 <Table.Cell>{m.text}</Table.Cell>
-                <Table.Cell>{m.currency} {m.price}</Table.Cell>
+                <Table.Cell>{m.unit} {m.value}</Table.Cell>
               </Table.Row>
             )
           }
@@ -108,8 +109,9 @@ export default Create;
 
 
 export async function getStaticProps(ctx) {
-  const countries = await getCountries();
-  const modules = await getProducts();
+  const { db } = await connectToDB();
+  const countries = await getCountries(db);
+  const products = await getProductSettings(db);
 
-  return { props: { countries, modules } };
+  return { props: { countries, products } };
 }

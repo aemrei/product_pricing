@@ -1,13 +1,9 @@
-import {
-  Container,
-  Header,
-  Input,
-  Table,
-} from "semantic-ui-react";
+import { Container, Header, Input, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
-import { getInterfaceFees } from "../../db/settings";
+import { connectToDB } from "../../db";
+import { CATEGORY_INTERFACE, getSettingsByCategory, getRangesByCategory } from "../../db";
 
-export default function InterfacePage({interfaceFees}){
+export default function InterfacePage({ interfaceSettings, interfaceRanges }) {
   return (
     <Container>
       <Header>Price per Interface</Header>
@@ -19,12 +15,14 @@ export default function InterfacePage({interfaceFees}){
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <Table.Row>
-            <Table.Cell>Base price for CAT-Interfaces</Table.Cell>
-            <Table.Cell>
-              <Input label="€" defaultValue={100000}/>
-            </Table.Cell>
-          </Table.Row>
+          {interfaceSettings.map((e) => (
+            <Table.Row key={e._id}>
+              <Table.Cell>{e.text}</Table.Cell>
+              <Table.Cell>
+                <Input label={e.unit} defaultValue={e.value} />
+              </Table.Cell>
+            </Table.Row>
+          ))}
         </Table.Body>
       </Table>
 
@@ -37,30 +35,30 @@ export default function InterfacePage({interfaceFees}){
           </Table.Row>
         </Table.Header>
         <Table.Body>
-        {
-          interfaceFees.map(e =>
+          {interfaceRanges.map((e) => (
             <Table.Row key={e._id}>
               <Table.Cell>
-              <Input defaultValue={e.lowerLimit}/>
+                <Input defaultValue={e.lowerLimit} />
               </Table.Cell>
               <Table.Cell>
-              <Input defaultValue={e.upperLimit}/>
+                <Input defaultValue={e.upperLimit} />
               </Table.Cell>
               <Table.Cell>
-                <Input label={e.icon} defaultValue={e.value}/>
+                <Input label={e.unit} defaultValue={e.value} />
               </Table.Cell>
             </Table.Row>
-          )
-        }
+          ))}
         </Table.Body>
       </Table>
-      <SaveButtons/>
+      <SaveButtons />
     </Container>
-  )
+  );
 }
 
 export async function getStaticProps(ctx) {
-  const interfaceFees = await getInterfaceFees();
+  const { db } = await connectToDB();
+  const interfaceSettings = await getSettingsByCategory(db, CATEGORY_INTERFACE);
+  const interfaceRanges = await getRangesByCategory(db, CATEGORY_INTERFACE);
 
-  return { props: { interfaceFees } };
+  return { props: { interfaceSettings, interfaceRanges } };
 }
