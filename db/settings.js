@@ -1,9 +1,10 @@
 import { nanoid } from "nanoid";
 
-const CATEGORY_FEE = "fee";
-const CATEGORY_USER = "user";
-const CATEGORY_PRODUCT = "product";
-const CATEGORY_INTERFACE = "interface";
+export const CATEGORY_COUNTRY = "fee";
+export const CATEGORY_FEE = "fee";
+export const CATEGORY_USER = "user";
+export const CATEGORY_PRODUCT = "product";
+export const CATEGORY_INTERFACE = "interface";
 
 export const CATEGORY_LIST = [
   {

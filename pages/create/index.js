@@ -1,21 +1,25 @@
-import {
-  Container,
-  Checkbox,
-  Form,
-  Header,
-  Table,
-} from "semantic-ui-react";
+import { useReducer } from "react";
+import { Container, Checkbox, Form, Header, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
-import { getCountries, getProductSettings } from "../../db/settings";
+import { CATEGORY_INTERFACE, CATEGORY_PRODUCT, getCountries, getRanges, getSettings } from "../../db/settings";
+import { quotationReducer, initiateQuotationState } from "./reducer";
 
-const Create = ({countries, products }) => {
+const Create = (props) => {
+  const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
+  const { productSettings, ranges, countries } = state;
+
   return (
     <Container>
       <Form>
         <Header as="h2">Customer Details</Header>
-        <Form.Input label="Customer Name"/>
-        <Form.Select label='Country of customer' defaultValue="Euro area" placeholder="Select country where the customer is located" options={countries} />
+        <Form.Input label="Customer Name" />
+        <Form.Select
+          label="Country of customer"
+          defaultValue="Euro area"
+          placeholder="Select country where the customer is located"
+          options={countries}
+        />
         <Header as="h2">Fit-EM Modules</Header>
         Customer wants to buy:
         <Table striped compact celled color="orange">
@@ -27,25 +31,22 @@ const Create = ({countries, products }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-          {
-            products.map(m =>
+            {productSettings.map((m) => (
               <Table.Row key={m._id}>
                 <Table.Cell collapsing>
-                  {!m.readOnly && <Checkbox slider readOnly={m.readOnly}/>}
+                  {!m.readOnly && <Checkbox toggle checked={m.activated} color="green" />}
                 </Table.Cell>
                 <Table.Cell>{m.text}</Table.Cell>
-                <Table.Cell>{m.unit} {m.value}</Table.Cell>
+                <Table.Cell>{m.activated ? `${m.unit} ${m.value}` : "-"}</Table.Cell>
               </Table.Row>
-            )
-          }
+            ))}
           </Table.Body>
         </Table>
         <Header as="h2">Interfaces</Header>
-        <Form.Input label="Number of required interfaces"/>
-        <Form.Input label="Number of SAP Users"/>
-        <Form.Input label="Number of Legal Entities"/>
-
-      <Header as="h2">Summary</Header>
+        <Form.Input label="Number of required interfaces" />
+        <Form.Input label="Number of SAP Users" />
+        <Form.Input label="Number of Legal Entities" />
+        <Header as="h2">Summary</Header>
         <Table striped compact celled>
           <Table.Header>
             <Table.Row>
@@ -55,21 +56,15 @@ const Create = ({countries, products }) => {
           </Table.Header>
           <Table.Body>
             <Table.Row>
-              <Table.Cell>
-                One-time-charge (including first year maintenance fee)
-              </Table.Cell>
+              <Table.Cell>One-time-charge (including first year maintenance fee)</Table.Cell>
               <Table.Cell> € 4,371,400 </Table.Cell>
             </Table.Row>
             <Table.Row>
-              <Table.Cell>
-                Annual fee (= annual maintenance fee)
-              </Table.Cell>
+              <Table.Cell>Annual fee (= annual maintenance fee)</Table.Cell>
               <Table.Cell> € 961,708 </Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>
-
-
         <Table striped compact celled color="green">
           <Table.Header>
             <Table.Row>
@@ -80,38 +75,33 @@ const Create = ({countries, products }) => {
           </Table.Header>
           <Table.Body>
             <Table.Row>
-              <Table.Cell>
-                Adapted License fee
-              </Table.Cell>
+              <Table.Cell>Adapted License fee</Table.Cell>
               <Table.Cell> € 4,371,400 </Table.Cell>
               <Table.Cell> $5,251,236 </Table.Cell>
             </Table.Row>
             <Table.Row>
-              <Table.Cell>
-                Adapted Annual Maintenance fee
-              </Table.Cell>
+              <Table.Cell>Adapted Annual Maintenance fee</Table.Cell>
               <Table.Cell> € 961,708 </Table.Cell>
               <Table.Cell> $1,155,272 </Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>
-
         <Header as="h4">Additional remarks</Header>
-        <Form.TextArea style={{minHeight: "8rem" }}/>
-
-        <SaveButtons/>
+        <Form.TextArea style={{ minHeight: "8rem" }} />
+        <SaveButtons />
       </Form>
     </Container>
-  )
-}
+  );
+};
 
 export default Create;
 
-
 export async function getStaticProps(ctx) {
   const { db } = await connectToDB();
-  const countries = await getCountries(db);
-  const products = await getProductSettings(db);
 
-  return { props: { countries, products } };
+  const countries = await getCountries(db);
+  const ranges = await getRanges(db);
+  const settings = await getSettings(db);
+
+  return { props: { countries, ranges, settings } };
 }
