@@ -3,7 +3,20 @@ import { CATEGORY_INTERFACE, CATEGORY_PRODUCT } from "../db/settings";
 export const SET_PRODUCT_ACTIVATION = "SET_PRODUCT_ACTIVATION";
 
 function calculateePrice(state) {
-  return state.summary;
+  const { settingsAsObject } = state;
+
+  const collected = {
+    onetime_eur: state.productSettings.reduce((x, y) => x + y.activated * y.value, 0),
+    annual_eur: 0,
+    bigmac_onetime_eur: 0,
+    bigmac_annual_eur: 0,
+    bigmac_onetime_usd: 0,
+    bigmac_annual_usd: 0,
+  };
+
+  collected.annual_eur = (collected.onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100;
+
+  return collected;
 }
 
 export const quotationReducer = (state, action) => {
@@ -11,7 +24,7 @@ export const quotationReducer = (state, action) => {
 
   switch (action.type) {
     case SET_PRODUCT_ACTIVATION:
-      updatedState.productSettings = updatedState.productSettings.map(p => {
+      updatedState.productSettings = updatedState.productSettings.map((p) => {
         if (p._id === action.payload._id) {
           return {
             ...p,
@@ -44,15 +57,21 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
     activated: p.readOnly || false,
   }));
 
-  return {
+  const settingsAsObject = settings.reduce((obj, set) => {
+    obj[set._id] = set;
+    return obj;
+  }, {});
+
+  const result = {
     version: "0.0.1",
     name: "",
+    additionalRemarks: "",
     country: "eur",
     countries: countries,
     rates: rates,
     interfaceSettings,
     productSettings,
-    additionalRemarks: "",
+    settingsAsObject,
     summary: {
       onetime_eur: 0,
       annual_eur: 0,
@@ -62,4 +81,8 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
       bigmac_annual_usd: 0,
     },
   };
+
+  result.summary = calculateePrice(result);
+
+  return result;
 };
