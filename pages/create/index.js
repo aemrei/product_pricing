@@ -3,7 +3,7 @@ import { Container, Checkbox, Form, Header, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
 import { getCountries, getRanges, getSettings } from "../../db/settings";
-import { quotationReducer, initiateQuotationState } from "../../utils/quotationReducer";
+import { quotationReducer, initiateQuotationState, SET_PRODUCT_ACTIVATION } from "../../utils/quotationReducer";
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
@@ -34,7 +34,16 @@ const Create = (props) => {
             {productSettings.map((m) => (
               <Table.Row key={m._id}>
                 <Table.Cell collapsing>
-                  {!m.readOnly && <Checkbox toggle checked={m.activated} color="green" />}
+                  {
+                    <Checkbox
+                      toggle
+                      readOnly={m.readOnly}
+                      checked={m.activated}
+                      onChange={() =>
+                        dispatch({ type: SET_PRODUCT_ACTIVATION, payload: { _id: m._id, activated: !m.activated } })
+                      }
+                    />
+                  }
                 </Table.Cell>
                 <Table.Cell>{m.text}</Table.Cell>
                 <Table.Cell>{m.activated ? `${m.unit} ${m.value}` : "-"}</Table.Cell>

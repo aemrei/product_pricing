@@ -1,5 +1,7 @@
 import { CATEGORY_INTERFACE, CATEGORY_PRODUCT } from "../db/settings";
 
+export const SET_PRODUCT_ACTIVATION = "SET_PRODUCT_ACTIVATION";
+
 function calculateePrice(state) {
   return state.summary;
 }
@@ -8,7 +10,16 @@ export const quotationReducer = (state, action) => {
   const { summary, ...updatedState } = { ...state };
 
   switch (action.type) {
-    case "activate":
+    case SET_PRODUCT_ACTIVATION:
+      updatedState.productSettings = updatedState.productSettings.map(p => {
+        if (p._id === action.payload._id) {
+          return {
+            ...p,
+            activated: action.payload.activated,
+          };
+        }
+        return p;
+      });
       break;
     default:
       updatedState[action.type] = action.payload;
