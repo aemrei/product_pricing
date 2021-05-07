@@ -1,4 +1,4 @@
-import { CATEGORY_INTERFACE, CATEGORY_PRODUCT } from "../../db/settings";
+import { CATEGORY_INTERFACE, CATEGORY_PRODUCT } from "../db/settings";
 
 function calculateePrice(state) {
   return state.summary;

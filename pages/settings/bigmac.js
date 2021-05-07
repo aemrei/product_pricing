@@ -3,6 +3,7 @@ import {
   Header,
   Table,
 } from "semantic-ui-react";
+import { connectToDB } from "../../db";
 import { getCountries } from "../../db/settings";
 
 export default function BigMacPage({countryBigMac}){
@@ -34,7 +35,9 @@ export default function BigMacPage({countryBigMac}){
 }
 
 export async function getStaticProps(ctx) {
-  const countryBigMac = await getCountries();
+  const { db } = await connectToDB();
+
+  const countryBigMac = await getCountries(db);
 
   return { props: { countryBigMac } };
 }

@@ -2,8 +2,8 @@ import { useReducer } from "react";
 import { Container, Checkbox, Form, Header, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
-import { CATEGORY_INTERFACE, CATEGORY_PRODUCT, getCountries, getRanges, getSettings } from "../../db/settings";
-import { quotationReducer, initiateQuotationState } from "./reducer";
+import { getCountries, getRanges, getSettings } from "../../db/settings";
+import { quotationReducer, initiateQuotationState } from "../../utils/quotationReducer";
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));

@@ -3,6 +3,7 @@ import {
   Header,
   Table,
 } from "semantic-ui-react";
+import { connectToDB } from "../../db";
 import { getExchangeRates } from "../../db/externalData";
 
 export default function ExchangeRatePage({exchangeRates}){
@@ -32,7 +33,9 @@ export default function ExchangeRatePage({exchangeRates}){
 }
 
 export async function getStaticProps(ctx) {
-  const exchangeRates = await getExchangeRates();
+  const { db } = await connectToDB();
+
+  const exchangeRates = await getExchangeRates(db);
 
   return { props: { exchangeRates } };
 }
