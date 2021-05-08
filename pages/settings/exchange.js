@@ -5,9 +5,9 @@ import { getSession } from "next-auth/client";
 
 export default function ExchangeRatePage({ exchangeRates = [] }) {
   return (
-    <Container>
+    <Container text>
       <Header>Exchange Rates</Header>
-      <Table striped compact celled>
+      <Table striped compact celled color="orange">
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Currency</Table.HeaderCell>

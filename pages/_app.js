@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <HeaderBar/>
       <main>
-        <Container text style={{ marginTop: '4em' }}>
+        <Container style={{ marginTop: '4em' }}>
           <Authorized>
             <Component {...pageProps} />
           </Authorized>

@@ -7,9 +7,9 @@ const icons = ["eur", "usd"];
 
 export default function BigMacPage({ countryBigMac }) {
   return (
-    <Container>
+    <Container text>
       <Header>BigMac Index</Header>
-      <Table striped compact celled>
+      <Table striped compact celled color="orange">
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell></Table.HeaderCell>

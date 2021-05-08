@@ -58,7 +58,7 @@ function RangeTable({ ranges }) {
 
 export default function InterfacePage({ settings = [], ranges = [] }) {
   return (
-    <Container>
+    <Container text>
       <Header>Price per Interface</Header>
       <SettingsTable settings={settings} />
       <RangeTable ranges={ranges} />
