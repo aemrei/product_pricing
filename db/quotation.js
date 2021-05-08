@@ -8,6 +8,10 @@ export const getQuotationByUser = async (db, userId) => {
   return db.collection('quotations').find({ userId }).toArray()
 }
 
+export const getQuotations = async (db) => {
+  return db.collection('quotations').find().toArray()
+}
+
 export const createQuotation = async (db, quotation) => {
   const createdAt = new Date().toDateString();
   return db

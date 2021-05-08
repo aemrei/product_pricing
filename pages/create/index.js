@@ -13,6 +13,7 @@ import {
   Statistic,
   Icon,
   Divider,
+  Image,
 } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
@@ -71,19 +72,37 @@ const Create = (props) => {
           <Form>
             <Header as="h2">Customer Details</Header>
             <Segment>
-              <Form.Input
-                fluid
-                label="Customer Name"
-                value={values.customerName}
-                onChange={(e) => setValue("customerName", e.target.value)}
-              />
-              <Form.Select
-                label="Country of customer"
-                value={values.country}
-                placeholder="Select country where the customer is located"
-                onChange={(e) => setValue("country", e.target.value)}
-                options={countries}
-              />
+              <Grid>
+                <Grid.Column width={6}>
+                  <Image
+                    fluid
+                    src={values.logoUrl}
+                  />
+                </Grid.Column>
+                <Grid.Column width={10}>
+                  <Form.Input
+                    fluid
+                    label="Customer Name"
+                    value={values.customerName}
+                    onChange={(e, { value }) => setValue("customerName", value)}
+                  />
+                  <Form.Select
+                    label="Country of customer"
+                    value={values.country}
+                    placeholder="Select country where the customer is located"
+                    onChange={(e, { value }) => {
+                      setValue("country", value);
+                    }}
+                    options={countries}
+                  />
+                  <Form.Input
+                    fluid
+                    label="Logo URL"
+                    value={values.logoUrl}
+                    onChange={(e, { value }) => setValue("logoUrl", value)}
+                  />
+                </Grid.Column>
+              </Grid>
             </Segment>
             <Header as="h2">Fit-EM Modules</Header>
             <Segment>
@@ -115,7 +134,7 @@ const Create = (props) => {
                         }
                       </Table.Cell>
                       <Table.Cell>{m.text}</Table.Cell>
-                      <Table.Cell>{m.activated ? `${m.unit} ${m.value}` : "-"}</Table.Cell>
+                      <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
@@ -129,7 +148,7 @@ const Create = (props) => {
                 fluid
                 label="Number of required interfaces"
                 value={values.numberOfInterfaces}
-                onChange={(e) => setValue("numberOfInterfaces", e.target.value)}
+                onChange={(e, { value }) => setValue("numberOfInterfaces", value)}
               />
             </Segment>
             <Header as="h2">Others</Header>
@@ -138,13 +157,13 @@ const Create = (props) => {
                 fluid
                 label="Number of SAP Users"
                 value={values.numberOfUsers}
-                onChange={(e) => setValue("numberOfUsers", e.target.value)}
+                onChange={(e, { value }) => setValue("numberOfUsers", value)}
               />
               <Form.Input
                 fluid
                 label="Number of Legal Entities"
                 value={values.numberOfLegalEntities}
-                onChange={(e) => setValue("numberOfLegalEntities", e.target.value)}
+                onChange={(e, { value }) => setValue("numberOfLegalEntities", value)}
               />
             </Segment>
             <Header as="h2">Summary</Header>
@@ -198,7 +217,7 @@ const Create = (props) => {
               <Form.TextArea
                 value={values.additionalRemarks}
                 style={{ minHeight: "8rem" }}
-                onChange={(e) => setValue("additionalRemarks", e.target.value)}
+                onChange={(e, { value }) => setValue("additionalRemarks", value)}
               />
             </Segment>
             <SaveButtons onSave={() => createQuotation(state)} />
@@ -207,14 +226,14 @@ const Create = (props) => {
             <Rail dividing position="right">
               <Sticky context={contextRef} bottomOffset={50} offset={50} pushing>
                 <Segment textAlign="center">
-                  <Statistic size="small" color="blue">
+                  <Statistic size="tiny" color="blue">
                     <Statistic.Value>
                       <Icon name="eur" /> {summary.onetime_eur.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>License fee</Statistic.Label>
                   </Statistic>
                   <Divider />
-                  <Statistic size="small" color="blue">
+                  <Statistic size="tiny" color="orange">
                     <Statistic.Value>
                       <Icon name="eur" /> {summary.annual_eur.toLocaleString()}
                     </Statistic.Value>
@@ -232,7 +251,7 @@ const Create = (props) => {
 
 export default Create;
 
-export async function getStaticProps(ctx) {
+export async function getServerSideProps(ctx) {
   const { db } = await connectToDB();
 
   const countries = await getCountries(db);

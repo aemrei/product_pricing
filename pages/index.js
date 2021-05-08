@@ -1,9 +1,14 @@
-import styles from '../styles/Home.module.css'
+import QuotationList from "../components/QuotationList";
+import { connectToDB, getQuotations } from "../db";
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      Demo
-    </div>
-  )
+export default function Home({ quotations = [] }) {
+  return <QuotationList quotations={quotations}/>;
+}
+
+export async function getServerSideProps(ctx) {
+  const { db } = await connectToDB();
+
+  const quotations = await getQuotations(db);
+
+  return { props: { quotations } };
 }
