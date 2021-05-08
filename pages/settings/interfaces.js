@@ -2,6 +2,7 @@ import { Container, Header, Input, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
 import { CATEGORY_INTERFACE, getSettingsByCategory, getRangesByCategory } from "../../db";
+import { getSession } from 'next-auth/client'
 
 export default function InterfacePage({ interfaceSettings, interfaceRanges }) {
   return (
@@ -55,7 +56,12 @@ export default function InterfacePage({ interfaceSettings, interfaceRanges }) {
   );
 }
 
-export async function getStaticProps(ctx) {
+export async function getServerSideProps(ctx) {
+  const session = await getSession(ctx);
+  if (!session || !session.user) {
+    // return { props: {} };
+  }
+
   const { db } = await connectToDB();
   const interfaceSettings = await getSettingsByCategory(db, CATEGORY_INTERFACE);
   const interfaceRanges = await getRangesByCategory(db, CATEGORY_INTERFACE);

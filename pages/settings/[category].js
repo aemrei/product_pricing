@@ -1,6 +1,8 @@
 import { Container, Header, Input, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
-import { CATEGORY_LIST, connectToDB, getSettingsByCategory, getRangesByCategory } from "../../db";
+import { connectToDB } from "../../db/connect";
+import { getSettingsByCategory, getRangesByCategory } from "../../db/settings";
+import { getSession } from "next-auth/client";
 
 function SettingsTable({ settings }) {
   return settings.length === 0 ? null : (
@@ -65,12 +67,12 @@ export default function InterfacePage({ settings = [], ranges = [] }) {
   );
 }
 
-export async function getStaticPaths() {
-  const result = { paths: CATEGORY_LIST.map((c) => ({ params: { category: c._id } })), fallback: false };
-  return result;
-}
+export async function getServerSideProps(ctx) {
+  const session = await getSession(ctx);
+  if (!session || !session.user) {
+    // return { props: {} };
+  }
 
-export async function getStaticProps(ctx) {
   const { db } = await connectToDB();
   const settings = await getSettingsByCategory(db, ctx.params.category);
   const ranges = await getRangesByCategory(db, ctx.params.category);
