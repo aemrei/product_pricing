@@ -1,5 +1,19 @@
 import { useReducer, useRef } from "react";
-import { Container, Checkbox, Form, Header, Table, Segment, Grid, Ref, Rail, Sticky } from "semantic-ui-react";
+import {
+  Container,
+  Checkbox,
+  Form,
+  Header,
+  Table,
+  Segment,
+  Grid,
+  Ref,
+  Rail,
+  Sticky,
+  Statistic,
+  Icon,
+  Divider,
+} from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
 import { getCountries, getRanges, getSettings } from "../../db/settings";
@@ -30,7 +44,7 @@ const Create = (props) => {
   return (
     <Container>
       <Grid columns={2}>
-        <Grid.Column width={10}>
+        <Grid.Column width={11}>
           <Form>
             <Header as="h2">Customer Details</Header>
             <Segment>
@@ -110,6 +124,52 @@ const Create = (props) => {
                 onChange={(e) => setValue("numberOfLegalEntities", e.target.value)}
               />
             </Segment>
+            <Header as="h2">Summary</Header>
+            <Segment.Group raised>
+              <Segment>
+                <Table striped compact celled>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Total</Table.HeaderCell>
+                      <Table.HeaderCell>Euro</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>One-time-charge (including first year maintenance fee)</Table.Cell>
+                      <Table.Cell> € {summary.onetime_eur.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Annual fee (= annual maintenance fee)</Table.Cell>
+                      <Table.Cell> € {summary.annual_eur.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+              </Segment>
+              <Segment>
+                <Table striped compact celled color="green">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>BigMac corrected</Table.HeaderCell>
+                      <Table.HeaderCell>Euro</Table.HeaderCell>
+                      <Table.HeaderCell>Dollar</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>Adapted License fee</Table.Cell>
+                      <Table.Cell> € {summary.bigmac_onetime_eur.toLocaleString()} </Table.Cell>
+                      <Table.Cell> $ {summary.bigmac_onetime_usd.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Adapted Annual Maintenance fee</Table.Cell>
+                      <Table.Cell> € {summary.bigmac_annual_eur.toLocaleString()} </Table.Cell>
+                      <Table.Cell> $ {summary.bigmac_annual_usd.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+              </Segment>
+            </Segment.Group>
             <Segment>
               <Header as="h4">Additional remarks</Header>
               <Form.TextArea
@@ -118,60 +178,26 @@ const Create = (props) => {
                 onChange={(e) => setValue("additionalRemarks", e.target.value)}
               />
             </Segment>
+            <SaveButtons />
           </Form>
           <Ref innerRef={contextRef}>
             <Rail dividing position="right">
               <Sticky context={contextRef} bottomOffset={50} offset={50} pushing>
-                <Form>
-                  <Header as="h">Summary</Header>
-                  <Segment.Group raised>
-                    <Segment>
-                      <Table striped compact celled>
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.HeaderCell>Total</Table.HeaderCell>
-                            <Table.HeaderCell>Euro</Table.HeaderCell>
-                          </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                          <Table.Row>
-                            <Table.Cell>One-time-charge (including first year maintenance fee)</Table.Cell>
-                            <Table.Cell> € {summary.onetime_eur} </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell>Annual fee (= annual maintenance fee)</Table.Cell>
-                            <Table.Cell> € {summary.annual_eur} </Table.Cell>
-                          </Table.Row>
-                        </Table.Body>
-                      </Table>
-                    </Segment>
-                    <Segment>
-                      <Table striped compact celled color="green">
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.HeaderCell>BigMac corrected</Table.HeaderCell>
-                            <Table.HeaderCell>Euro</Table.HeaderCell>
-                            <Table.HeaderCell>Dollar</Table.HeaderCell>
-                          </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                          <Table.Row>
-                            <Table.Cell>Adapted License fee</Table.Cell>
-                            <Table.Cell> € {summary.bigmac_onetime_eur} </Table.Cell>
-                            <Table.Cell> $ {summary.bigmac_onetime_usd} </Table.Cell>
-                          </Table.Row>
-                          <Table.Row>
-                            <Table.Cell>Adapted Annual Maintenance fee</Table.Cell>
-                            <Table.Cell> € {summary.bigmac_annual_eur} </Table.Cell>
-                            <Table.Cell> $ {summary.bigmac_annual_usd} </Table.Cell>
-                          </Table.Row>
-                        </Table.Body>
-                      </Table>
-                    </Segment>
-                  </Segment.Group>
-
-                  <SaveButtons />
-                </Form>
+                <Segment textAlign="center">
+                  <Statistic size="small" color="blue">
+                    <Statistic.Value>
+                      <Icon name="eur" /> {summary.onetime_eur.toLocaleString()}
+                    </Statistic.Value>
+                    <Statistic.Label>License fee</Statistic.Label>
+                  </Statistic>
+                  <Divider />
+                  <Statistic size="small" color="blue">
+                    <Statistic.Value>
+                      <Icon name="eur" /> {summary.annual_eur.toLocaleString()}
+                    </Statistic.Value>
+                    <Statistic.Label>Maintenance fee</Statistic.Label>
+                  </Statistic>
+                </Segment>
               </Sticky>
             </Rail>
           </Ref>
