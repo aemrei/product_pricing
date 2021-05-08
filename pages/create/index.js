@@ -24,6 +24,29 @@ import {
   SET_PROPERTY,
 } from "../../utils/quotationReducer";
 
+const saveQuotation = async (quotationId, state) => {
+  await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
+    method: "PUT",
+    body: JSON.stringify(state),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+const createQuotation = async (state) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/`, {
+    method: "POST",
+    body: JSON.stringify(state),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const { data } = await res.json();
+  console.log({ data });
+};
+
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
   const { productSettings, values, countries, summary, settingsAsObject } = state;
@@ -178,7 +201,7 @@ const Create = (props) => {
                 onChange={(e) => setValue("additionalRemarks", e.target.value)}
               />
             </Segment>
-            <SaveButtons />
+            <SaveButtons onSave={() => createQuotation(state)} />
           </Form>
           <Ref innerRef={contextRef}>
             <Rail dividing position="right">

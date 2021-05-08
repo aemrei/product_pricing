@@ -1,12 +1,12 @@
 import {
-  Button,
+  Button, Icon,
 } from "semantic-ui-react";
 
-export default function SaveButtons() {
+export default function SaveButtons({onSave, onReset}) {
   return (
     <Button.Group widths='2'>
-      <Button>Cancel</Button>
-      <Button positive>Save</Button>
+      <Button onClick={onReset}><Icon name="repeat" /> Reset</Button>
+      <Button positive onClick={onSave}><Icon name="save" /> Save</Button>
     </Button.Group>
   );
 }
