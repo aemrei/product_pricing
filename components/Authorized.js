@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRouter } from "next/router"
 import { useEffect } from "react"
-import { useSession } from 'next-auth/client'
+import { useSession, signIn } from 'next-auth/client'
 import { Container } from "semantic-ui-react"
 
 const Authorized = ({ children, ...styles }) => {
@@ -10,12 +10,12 @@ const Authorized = ({ children, ...styles }) => {
 
   useEffect(() => {
     if (!loading && !session && router.route !== "/") {
-      router.push('/');
+      signIn("google")
     }
   }, [session, router, loading]);
 
   return (
-    <Container>
+    <Container {...styles}>
       {loading ? <span>Please wait...</span> : session ? children : <span>Please login</span>}
     </Container>
   );

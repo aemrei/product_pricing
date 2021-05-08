@@ -6,7 +6,7 @@ import { getSession } from "next-auth/client";
 
 function SettingsTable({ settings }) {
   return settings.length === 0 ? null : (
-    <Table striped compact celled>
+    <Table striped compact celled color="orange">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Type</Table.HeaderCell>
@@ -29,7 +29,7 @@ function SettingsTable({ settings }) {
 
 function RangeTable({ ranges }) {
   return ranges.length === 0 ? null : (
-    <Table striped compact celled>
+    <Table striped compact celled color="orange">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell collapsing>From</Table.HeaderCell>
