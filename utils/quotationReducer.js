@@ -1,8 +1,9 @@
-import { CATEGORY_INTERFACE, CATEGORY_PRODUCT } from "../db/settings";
+import { CATEGORY_PRODUCT } from "../db/settings";
 
 export const SET_PRODUCT_ACTIVATION = "SET_PRODUCT_ACTIVATION";
+export const SET_PROPERTY = "SET_PROPERTY";
 
-function calculateePrice(state) {
+function calculatePrice(state) {
   const { settingsAsObject } = state;
 
   const collected = {
@@ -34,13 +35,22 @@ export const quotationReducer = (state, action) => {
         return p;
       });
       break;
+    case SET_PROPERTY:
+      updatedState.values = {
+        ...updatedState.values,
+        [action.payload.property]: action.payload.value,
+      };
+
+      updatedState.values.numberOfInterfaces =
+        +updatedState.values.numberOfInterfaces * updatedState.values.interfaceActivated;
+      break;
     default:
       updatedState[action.type] = action.payload;
   }
 
   const result = {
     ...updatedState,
-    summary: calculateePrice(updatedState),
+    summary: calculatePrice(updatedState),
   };
 
   return result;
@@ -51,7 +61,6 @@ const filterByCategory = (list, category) => {
 };
 
 export const initiateQuotationState = ({ ranges = [], settings = [], countries = [], rates = [] }) => {
-  const interfaceSettings = filterByCategory(settings, CATEGORY_INTERFACE);
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
     activated: p.readOnly || false,
@@ -64,14 +73,19 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
 
   const result = {
     version: "0.0.1",
-    name: "",
-    additionalRemarks: "",
-    country: "eur",
     countries: countries,
     rates: rates,
-    interfaceSettings,
     productSettings,
     settingsAsObject,
+    values: {
+      interfaceActivated: true,
+      additionalRemarks: "",
+      country: "eur",
+      customerName: "",
+      numberOfInterfaces: 1,
+      numberOfUsers: 1,
+      numberOfLegalEntities: 1,
+    },
     summary: {
       onetime_eur: 0,
       annual_eur: 0,
@@ -82,7 +96,7 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
     },
   };
 
-  result.summary = calculateePrice(result);
+  result.summary = calculatePrice(result);
 
   return result;
 };

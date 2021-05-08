@@ -39,13 +39,13 @@ function RangeTable({ ranges }) {
         {ranges.map((e) => (
           <Table.Row key={e._id}>
             <Table.Cell>
-              <Input defaultValue={e.lowerLimit} />
+              <Input fluid defaultValue={e.lowerLimit} />
             </Table.Cell>
             <Table.Cell>
-              <Input defaultValue={e.upperLimit} />
+              <Input fluid defaultValue={e.upperLimit} />
             </Table.Cell>
             <Table.Cell>
-              <Input label={e.unit} defaultValue={e.value} />
+              <Input fluid label={e.unit} defaultValue={e.value} />
             </Table.Cell>
           </Table.Row>
         ))}

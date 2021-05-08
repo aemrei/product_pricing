@@ -3,22 +3,45 @@ import { Container, Checkbox, Form, Header, Table, Segment } from "semantic-ui-r
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db";
 import { getCountries, getRanges, getSettings } from "../../db/settings";
-import { quotationReducer, initiateQuotationState, SET_PRODUCT_ACTIVATION } from "../../utils/quotationReducer";
+import {
+  quotationReducer,
+  initiateQuotationState,
+  SET_PRODUCT_ACTIVATION,
+  SET_PROPERTY,
+} from "../../utils/quotationReducer";
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
-  const { productSettings, ranges, countries, summary } = state;
+  const { productSettings, values, countries, summary, settingsAsObject } = state;
+
+  const toggleValue = (name) =>
+    dispatch({
+      type: SET_PROPERTY,
+      payload: { property: name, value: !values[name] },
+    });
+
+  const setValue = (name, value) =>
+    dispatch({
+      type: SET_PROPERTY,
+      payload: { property: name, value: value },
+    });
 
   return (
     <Container>
       <Form>
         <Header as="h2">Customer Details</Header>
         <Segment>
-          <Form.Input label="Customer Name" />
+          <Form.Input
+            fluid
+            label="Customer Name"
+            value={values.customerName}
+            onChange={(e) => setValue("customerName", e.target.value)}
+          />
           <Form.Select
             label="Country of customer"
-            defaultValue="Euro area"
+            value={values.country}
             placeholder="Select country where the customer is located"
+            onChange={(e) => setValue("country", e.target.value)}
             options={countries}
           />
         </Segment>
@@ -57,9 +80,29 @@ const Create = (props) => {
         </Segment>
         <Header as="h2">Interfaces</Header>
         <Segment>
-          <Form.Input label="Number of required interfaces" />
-          <Form.Input label="Number of SAP Users" />
-          <Form.Input label="Number of Legal Entities" />
+          <Checkbox toggle checked={values.interfaceActivated} onChange={() => toggleValue("interfaceActivated")} />
+          <Form.Input
+            readOnly={!values.interfaceActivated}
+            fluid
+            label="Number of required interfaces"
+            value={values.numberOfInterfaces}
+            onChange={(e) => setValue("numberOfInterfaces", e.target.value)}
+          />
+        </Segment>
+        <Header as="h2">Others</Header>
+        <Segment>
+          <Form.Input
+            fluid
+            label="Number of SAP Users"
+            value={values.numberOfUsers}
+            onChange={(e) => setValue("numberOfUsers", e.target.value)}
+          />
+          <Form.Input
+            fluid
+            label="Number of Legal Entities"
+            value={values.numberOfLegalEntities}
+            onChange={(e) => setValue("numberOfLegalEntities", e.target.value)}
+          />
         </Segment>
         <Header as="h2">Summary</Header>
         <Segment.Group raised>
@@ -109,7 +152,11 @@ const Create = (props) => {
         </Segment.Group>
         <Segment>
           <Header as="h4">Additional remarks</Header>
-          <Form.TextArea style={{ minHeight: "8rem" }} />
+          <Form.TextArea
+            value={values.additionalRemarks}
+            style={{ minHeight: "8rem" }}
+            onChange={(e) => setValue("additionalRemarks", e.target.value)}
+          />
         </Segment>
         <SaveButtons />
       </Form>

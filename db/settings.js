@@ -67,7 +67,7 @@ export const getCountries = async (db) => {
   const countries = await db.collection("countries").find().toArray();
   return countries.map(c => ({
     key: c._id,
-    value: c.text,
+    value: c._id,
     ...c,
   }));
 };
