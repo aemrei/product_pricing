@@ -52,7 +52,7 @@ const createQuotation = async (state) => {
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
-  const { productSettings, values, countries, summary, settingsAsObject } = state;
+  const { productSettings, values, countries, summary } = state;
   const contextRef = useRef(null);
 
   const toggleValue = (name) =>
