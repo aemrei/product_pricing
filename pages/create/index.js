@@ -16,7 +16,7 @@ import {
   Image,
 } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
-import { connectToDB } from "../../db";
+import { connectToDB, getExchangeRates } from "../../db";
 import { getCountries, getRanges, getSettings } from "../../db/settings";
 import {
   quotationReducer,
@@ -260,6 +260,7 @@ export async function getServerSideProps(ctx) {
   const countries = await getCountries(db);
   const ranges = await getRanges(db);
   const settings = await getSettings(db);
+  const exchangeRates = await getExchangeRates(db);
 
-  return { props: { countries, ranges, settings } };
+  return { props: { countries, ranges, settings, exchangeRates } };
 }

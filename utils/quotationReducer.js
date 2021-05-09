@@ -19,7 +19,7 @@ const getActiveRangeValue = (ranges, category, count) => {
 };
 
 function calculatePrice(state) {
-  const { settingsAsObject, values, ranges, countries, rates } = state;
+  const { settingsAsObject, values, ranges, countries, exchangeRates } = state;
   const prodouct_prices = state.productSettings.reduce((x, y) => x + y.activated * y.value, 0);
 
   const interface_baseprice = values.interfaceActivated * settingsAsObject.interfaceBasePrice.value;
@@ -33,17 +33,22 @@ function calculatePrice(state) {
   const lagalEntityPrice = (values.numberOfLegalEntities - 1) * settingsAsObject.perLegalEntity.value;
 
   const onetime_eur = prodouct_prices + interface_prices + user_prices + lagalEntityPrice;
-  const annual_eur = (onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100;
+  const annual_eur = Math.round((onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100);
 
   const bigMacRate = countries.find(c => c._id === values.country);
   if (!bigMacRate) {
     throw new Error("Country could not found", values.country);
   }
 
+  const dollar_rate = exchangeRates.find(c => c._id === "USD");
+  if (!dollar_rate) {
+    throw new Error("USD rate could not found", values.country);
+  }
+
   const bigmac_onetime_eur = Math.round(onetime_eur * bigMacRate.euro_ratio);
   const bigmac_annual_eur = Math.round(annual_eur * bigMacRate.euro_ratio);
-  const bigmac_onetime_usd = bigmac_onetime_eur;
-  const bigmac_annual_usd = bigmac_annual_eur;
+  const bigmac_onetime_usd = Math.round(bigmac_onetime_eur * dollar_rate.rate);
+  const bigmac_annual_usd = Math.round(bigmac_annual_eur * dollar_rate.rate);
 
   return {
     onetime_eur,
@@ -102,7 +107,7 @@ const filterByCategory = (list, category) => {
   return list.filter((i) => i.category === category);
 };
 
-export const initiateQuotationState = ({ ranges = [], settings = [], countries = [], rates = [] }) => {
+export const initiateQuotationState = ({ ranges = [], settings = [], countries = [], exchangeRates = [] }) => {
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
     activated: false,
@@ -116,7 +121,7 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
   const result = {
     version: "0.0.1",
     countries: countries,
-    rates: rates,
+    exchangeRates,
     productSettings,
     settingsAsObject,
     ranges,
