@@ -19,7 +19,7 @@ const getActiveRangeValue = (ranges, category, count) => {
 };
 
 function calculatePrice(state) {
-  const { settingsAsObject, values, ranges } = state;
+  const { settingsAsObject, values, ranges, countries, rates } = state;
   const prodouct_prices = state.productSettings.reduce((x, y) => x + y.activated * y.value, 0);
 
   const interface_baseprice = values.interfaceActivated * settingsAsObject.interfaceBasePrice.value;
@@ -35,8 +35,13 @@ function calculatePrice(state) {
   const onetime_eur = prodouct_prices + interface_prices + user_prices + lagalEntityPrice;
   const annual_eur = (onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100;
 
-  const bigmac_onetime_eur = onetime_eur;
-  const bigmac_annual_eur = annual_eur;
+  const bigMacRate = countries.find(c => c._id === values.country);
+  if (!bigMacRate) {
+    throw new Error("Country could not found", values.country);
+  }
+
+  const bigmac_onetime_eur = Math.round(onetime_eur * bigMacRate.euro_ratio);
+  const bigmac_annual_eur = Math.round(annual_eur * bigMacRate.euro_ratio);
   const bigmac_onetime_usd = bigmac_onetime_eur;
   const bigmac_annual_usd = bigmac_annual_eur;
 
@@ -59,6 +64,8 @@ export const quotationReducer = (state, action) => {
 
   switch (action.type) {
     case SET_PRODUCT_ACTIVATION:
+      const basePrice = updatedState.productSettings.find(p => p._id === "base");
+      basePrice.activated = false;
       updatedState.productSettings = updatedState.productSettings.map((p) => {
         if (p._id === action.payload._id) {
           return {
@@ -68,6 +75,7 @@ export const quotationReducer = (state, action) => {
         }
         return p;
       });
+      basePrice.activated = updatedState.productSettings.some(p => p.activated);
       break;
     case SET_PROPERTY:
       updatedState.values = {
@@ -97,7 +105,7 @@ const filterByCategory = (list, category) => {
 export const initiateQuotationState = ({ ranges = [], settings = [], countries = [], rates = [] }) => {
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
-    activated: p.readOnly || false,
+    activated: false,
   }));
 
   const settingsAsObject = settings.reduce((obj, set) => {

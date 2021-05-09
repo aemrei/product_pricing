@@ -25,7 +25,7 @@ import {
   SET_PROPERTY,
 } from "../../utils/quotationReducer";
 
-const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/71/718383dce01838610d231172fd415bdb.png";
+const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/e7/e7afc68111d1024319df153026af36cd.jpeg";
 
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
@@ -236,7 +236,7 @@ const Create = (props) => {
                     <Statistic.Label>License fee</Statistic.Label>
                   </Statistic>
                   <Divider />
-                  <Statistic size="tiny" color="orange">
+                  <Statistic size="mini" color="orange">
                     <Statistic.Value>
                       <Icon name="eur" /> {summary.bigmac_annual_eur.toLocaleString()}
                     </Statistic.Value>
