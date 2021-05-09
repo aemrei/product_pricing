@@ -39,7 +39,6 @@ export default function QuotationDetail({ quotation }) {
                   <Form.Select
                     label="Country of customer"
                     value={values.country}
-                    transparent
                     readOnly
                     placeholder="Select country where the customer is located"
                     options={countries}
@@ -146,7 +145,7 @@ export default function QuotationDetail({ quotation }) {
             </Segment.Group>
             <Segment>
               <Header as="h4">Additional remarks</Header>
-              <Form.TextArea readOnly transparent value={values.additionalRemarks} style={{ minHeight: "8rem" }} />
+              <Form.TextArea readOnly value={values.additionalRemarks} style={{ minHeight: "8rem" }} />
             </Segment>
           </Form>
           <Ref innerRef={contextRef}>

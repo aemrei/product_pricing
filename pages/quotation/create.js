@@ -1,4 +1,5 @@
 import { useReducer, useRef } from "react";
+import { useRouter } from "next/router"
 import {
   Container,
   Checkbox,
@@ -48,12 +49,14 @@ const createQuotation = async (state) => {
 
   const { data } = await res.json();
   console.log({ data });
+  return data;
 };
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
   const { productSettings, values, countries, summary } = state;
   const contextRef = useRef(null);
+  const router = useRouter();
 
   const toggleValue = (name) =>
     dispatch({
@@ -223,7 +226,7 @@ const Create = (props) => {
                 onChange={(e, { value }) => setValue("additionalRemarks", value)}
               />
             </Segment>
-            <SaveButtons onSave={() => createQuotation(state)} />
+            <SaveButtons onSave={() => createQuotation(state).then(quotation => router.push(`/quotation/${quotation._id}`))} />
           </Form>
           <Ref innerRef={contextRef}>
             <Rail dividing position="right">

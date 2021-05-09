@@ -3,6 +3,14 @@ import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
 import { getSettingsByCategory, getRangesByCategory } from "../../db/settings";
 import { getSession } from "next-auth/client";
+import { useRouter } from "next/router";
+
+const PAGE_TITLES = {
+  fee: "Other Fees",
+  interface: "Per interface prices",
+  product: "Product Prices",
+  user: "Per user prices",
+};
 
 function SettingsTable({ settings }) {
   return settings.length === 0 ? null : (
@@ -57,9 +65,12 @@ function RangeTable({ ranges }) {
 }
 
 export default function InterfacePage({ settings = [], ranges = [] }) {
+  const router = useRouter();
+  const title = PAGE_TITLES[router.query.category] || "Settings";
+
   return (
     <Container text>
-      <Header>Price per Interface</Header>
+      <Header>{title}</Header>
       <SettingsTable settings={settings} />
       <RangeTable ranges={ranges} />
       <SaveButtons />
