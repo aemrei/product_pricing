@@ -25,6 +25,8 @@ import {
   SET_PROPERTY,
 } from "../../utils/quotationReducer";
 
+const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/71/718383dce01838610d231172fd415bdb.png";
+
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
     method: "PUT",
@@ -76,7 +78,7 @@ const Create = (props) => {
                 <Grid.Column width={6}>
                   <Image
                     fluid
-                    src={values.logoUrl}
+                    src={values.logoUrl || DEFAULT_LOGO}
                   />
                 </Grid.Column>
                 <Grid.Column width={10}>
@@ -98,6 +100,7 @@ const Create = (props) => {
                   <Form.Input
                     fluid
                     label="Logo URL"
+                    placeholder="URL for company logo if exists"
                     value={values.logoUrl}
                     onChange={(e, { value }) => setValue("logoUrl", value)}
                   />
@@ -228,14 +231,14 @@ const Create = (props) => {
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.onetime_eur.toLocaleString()}
+                      <Icon name="eur" /> {summary.bigmac_onetime_eur.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>License fee</Statistic.Label>
                   </Statistic>
                   <Divider />
                   <Statistic size="tiny" color="orange">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.annual_eur.toLocaleString()}
+                      <Icon name="eur" /> {summary.bigmac_annual_eur.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>Maintenance fee</Statistic.Label>
                   </Statistic>

@@ -29,11 +29,11 @@ const QuotationItem = ({ quotation }) => {
             <Grid.Column width={9}>{values.additionalRemarks}</Grid.Column>
             <Grid.Column width={2}>
               <Header sub>License</Header>
-              <span>€ {summary.onetime_eur.toLocaleString()}</span>
+              <span>€ {summary.bigmac_onetime_eur.toLocaleString()}</span>
             </Grid.Column>
             <Grid.Column width={2}>
               <Header sub>Maintenance</Header>
-              <span>€ {summary.annual_eur.toLocaleString()}</span>
+              <span>€ {summary.bigmac_annual_eur.toLocaleString()}</span>
             </Grid.Column>
           </Grid>
         </Item.Description>
