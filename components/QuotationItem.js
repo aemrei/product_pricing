@@ -1,5 +1,7 @@
 import { Item, Flag, Label, Icon, Button, Comment, Header, Grid } from "semantic-ui-react";
 
+const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
+
 const icons = ["eur", "usd"];
 const PRODUCT_COLORS = {
   "Fit-Prime": "orange",
@@ -11,18 +13,18 @@ const PRODUCT_COLORS = {
 };
 
 const QuotationItem = ({ quotation }) => {
-  const { productSettings, values, summary, createdAt, createdBy } = quotation;
-  console.log({ quotation });
+  const { productSettings, values, summary, createdAt, createdByFullName } = quotation;
+
   return (
     <Item>
-      <Item.Image src={values.logoUrl} />
+      <Item.Image src={values.logoUrl || DEFAULT_LOGO} />
       <Item.Content>
         <Item.Header as="a">
           {icons.includes(values.country) ? <Icon name={values.country} /> : <Flag name={values.country} />}{" "}
           {values.customerName}
         </Item.Header>
         <Item.Meta>
-          {createdBy} at {createdAt}
+          {createdByFullName} at {createdAt}
         </Item.Meta>
         <Item.Description>
           <Grid>

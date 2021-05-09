@@ -25,7 +25,7 @@ import {
   SET_PROPERTY,
 } from "../../utils/quotationReducer";
 
-const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/e7/e7afc68111d1024319df153026af36cd.jpeg";
+const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
 
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {

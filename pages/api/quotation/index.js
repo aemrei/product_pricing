@@ -12,7 +12,8 @@ handler.use(middleware);
 handler.post(async (req, res) => {
   const newDoc = await createQuotation(req.db, {
     ...req.body,
-    createdBy: req.user.id,
+    createdByFullName: req.user.name,
+    createdBy: req.user.email,
   });
   res.send({ data: newDoc });
 });
