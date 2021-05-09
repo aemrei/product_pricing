@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { Item, Flag, Label, Icon, Button, Comment, Header, Grid } from "semantic-ui-react";
 
 const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
@@ -13,6 +14,7 @@ const PRODUCT_COLORS = {
 };
 
 const QuotationItem = ({ quotation }) => {
+  const router = useRouter();
   const { productSettings, values, summary, createdAt, createdByFullName } = quotation;
 
   return (
@@ -45,7 +47,7 @@ const QuotationItem = ({ quotation }) => {
             .map((p) => (
               <Label key={p._id} color={PRODUCT_COLORS[p._id]} icon="check circle" content={p.text} />
             ))}
-          <Button primary floated="right">
+          <Button primary floated="right" onClick={() => router.push(`/quotation/${quotation._id}`)}>
             Details
             <Icon name="right chevron" />
           </Button>

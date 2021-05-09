@@ -38,7 +38,7 @@ const HeaderBar = () => {
       <Container>
         <GoToHome />
 
-        <NextLink href="/create" passHref>
+        <NextLink href="/quotation/create" passHref>
           <Menu.Item as="a" header>
             Create
           </Menu.Item>

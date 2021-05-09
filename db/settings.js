@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 
-export const CATEGORY_COUNTRY = "fee";
 export const CATEGORY_FEE = "fee";
 export const CATEGORY_USER = "user";
 export const CATEGORY_PRODUCT = "product";

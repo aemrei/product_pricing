@@ -70,7 +70,7 @@ export default function InterfacePage({ settings = [], ranges = [] }) {
 export async function getServerSideProps(ctx) {
   const session = await getSession(ctx);
   if (!session || !session.user) {
-    // return { props: {} };
+    return { props: {} };
   }
 
   const { db } = await connectToDB();
