@@ -8,19 +8,15 @@ export const CATEGORY_INTERFACE = "interface";
 export const CATEGORY_LIST = [
   {
     _id: CATEGORY_FEE,
-    title: "Other fees",
   },
   {
     _id: CATEGORY_INTERFACE,
-    title: "Per interface prices",
   },
   {
     _id: CATEGORY_PRODUCT,
-    title: "Product prices",
   },
   {
     _id: CATEGORY_USER,
-    title: "Per user prices",
   },
 ];
 

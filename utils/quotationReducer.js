@@ -2,6 +2,7 @@ import { CATEGORY_INTERFACE, CATEGORY_PRODUCT, CATEGORY_USER } from "../db/setti
 
 export const SET_PRODUCT_ACTIVATION = "SET_PRODUCT_ACTIVATION";
 export const SET_PROPERTY = "SET_PROPERTY";
+export const RESET = "RESET";
 
 const getActiveRangeValue = (ranges, category, count) => {
   if (count === 0) {
@@ -91,6 +92,8 @@ export const quotationReducer = (state, action) => {
       updatedState.values.numberOfInterfaces =
         +updatedState.values.numberOfInterfaces * updatedState.values.interfaceActivated;
       break;
+    case RESET:
+      return initiateQuotationState(action.payload);
     default:
       updatedState[action.type] = action.payload;
   }

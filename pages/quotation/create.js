@@ -1,5 +1,5 @@
 import { useReducer, useRef } from "react";
-import { useRouter } from "next/router"
+import { useRouter } from "next/router";
 import {
   Container,
   Checkbox,
@@ -24,6 +24,7 @@ import {
   initiateQuotationState,
   SET_PRODUCT_ACTIVATION,
   SET_PROPERTY,
+  RESET,
 } from "../../utils/quotationReducer";
 
 const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
@@ -53,7 +54,7 @@ const createQuotation = async (state) => {
 };
 
 const Create = (props) => {
-  const [state, dispatch] = useReducer(quotationReducer, initiateQuotationState(props));
+  const [state, dispatch] = useReducer(quotationReducer, props, initiateQuotationState);
   const { productSettings, values, countries, summary } = state;
   const contextRef = useRef(null);
   const router = useRouter();
@@ -79,10 +80,7 @@ const Create = (props) => {
             <Segment>
               <Grid>
                 <Grid.Column width={6}>
-                  <Image
-                    fluid
-                    src={values.logoUrl || DEFAULT_LOGO}
-                  />
+                  <Image fluid src={values.logoUrl || DEFAULT_LOGO} />
                 </Grid.Column>
                 <Grid.Column width={10}>
                   <Form.Input
@@ -226,7 +224,10 @@ const Create = (props) => {
                 onChange={(e, { value }) => setValue("additionalRemarks", value)}
               />
             </Segment>
-            <SaveButtons onSave={() => createQuotation(state).then(quotation => router.push(`/quotation/${quotation._id}`))} />
+            <SaveButtons
+              onSave={() => createQuotation(state).then((quotation) => router.push(`/quotation/${quotation._id}`))}
+              onReset={() => dispatch({ type: RESET, payload: props })}
+            />
           </Form>
           <Ref innerRef={contextRef}>
             <Rail dividing position="right">
