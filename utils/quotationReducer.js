@@ -133,6 +133,7 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
       additionalRemarks: "",
       country: "eur",
       customerName: "",
+      logoUrl: "",
       numberOfInterfaces: 0,
       numberOfUsers: 0,
       numberOfLegalEntities: 1,

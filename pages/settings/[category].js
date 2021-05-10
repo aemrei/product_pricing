@@ -1,9 +1,11 @@
 import { Container, Header, Input, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
-import { getSettingsByCategory, getRangesByCategory } from "../../db/settings";
+import { getSettings, getRanges } from "../../db/settings";
 import { getSession } from "next-auth/client";
 import { useRouter } from "next/router";
+import { categoryReducer, initCategoryReducer, RESET, UPDATE_RANGE, UPDATE_SETTING } from "../../utils/settingsReducer";
+import { useReducer } from "react";
 
 const PAGE_TITLES = {
   fee: "Other Fees",
@@ -12,7 +14,17 @@ const PAGE_TITLES = {
   user: "Per user prices",
 };
 
-function SettingsTable({ settings }) {
+const saveConfigs = async (data) => {
+  await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/config`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+function SettingsTable({ settings, dispatch }) {
   return settings.length === 0 ? null : (
     <Table striped compact celled color="orange">
       <Table.Header>
@@ -22,11 +34,15 @@ function SettingsTable({ settings }) {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {settings.map((e) => (
-          <Table.Row key={e._id}>
-            <Table.Cell>{e.text}</Table.Cell>
+        {settings.map((s) => (
+          <Table.Row key={s._id}>
+            <Table.Cell>{s.text}</Table.Cell>
             <Table.Cell>
-              <Input label={e.unit} defaultValue={e.value} />
+              <Input
+                label={s.unit}
+                value={s.value}
+                onChange={(e, { value }) => dispatch({ type: UPDATE_SETTING, payload: { ...s, value: +value } })}
+              />
             </Table.Cell>
           </Table.Row>
         ))}
@@ -35,7 +51,7 @@ function SettingsTable({ settings }) {
   );
 }
 
-function RangeTable({ ranges }) {
+function RangeTable({ ranges, dispatch }) {
   return ranges.length === 0 ? null : (
     <Table striped compact celled color="orange">
       <Table.Header>
@@ -46,16 +62,29 @@ function RangeTable({ ranges }) {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {ranges.map((e) => (
-          <Table.Row key={e._id}>
+        {ranges.map((r) => (
+          <Table.Row key={r._id}>
             <Table.Cell>
-              <Input fluid defaultValue={e.lowerLimit} />
+              <Input
+                fluid
+                value={r.lowerLimit}
+                onChange={(e, { value }) => dispatch({ type: UPDATE_RANGE, payload: { ...r, lowerLimit: +value } })}
+              />
             </Table.Cell>
             <Table.Cell>
-              <Input fluid defaultValue={e.upperLimit} />
+              <Input
+                fluid
+                value={r.upperLimit}
+                onChange={(e, { value }) => dispatch({ type: UPDATE_RANGE, payload: { ...r, upperLimit: +value } })}
+              />
             </Table.Cell>
             <Table.Cell>
-              <Input fluid label={e.unit} defaultValue={e.value} />
+              <Input
+                fluid
+                label={r.unit}
+                value={r.value}
+                onChange={(e, { value }) => dispatch({ type: UPDATE_RANGE, payload: { ...r, value: +value } })}
+              />
             </Table.Cell>
           </Table.Row>
         ))}
@@ -64,16 +93,22 @@ function RangeTable({ ranges }) {
   );
 }
 
-export default function InterfacePage({ settings = [], ranges = [] }) {
+export default function CategorySettingPage({ settings = [], ranges = [] }) {
   const router = useRouter();
+  const [state, dispatch] = useReducer(categoryReducer, { settings, ranges }, initCategoryReducer);
   const title = PAGE_TITLES[router.query.category] || "Settings";
+  const categorySettings = state.settings.filter((s) => s.category === router.query.category);
+  const categoryRanges = state.ranges.filter((r) => r.category === router.query.category);
 
   return (
     <Container text>
       <Header>{title}</Header>
-      <SettingsTable settings={settings} />
-      <RangeTable ranges={ranges} />
-      <SaveButtons />
+      <SettingsTable settings={categorySettings} dispatch={dispatch} />
+      <RangeTable ranges={categoryRanges} dispatch={dispatch} />
+      <SaveButtons
+        onReset={() => dispatch({ type: RESET, payload: { settings, ranges } })}
+        onSave={() => saveConfigs({ settings: categorySettings, ranges: categoryRanges })}
+      />
     </Container>
   );
 }
@@ -85,8 +120,8 @@ export async function getServerSideProps(ctx) {
   }
 
   const { db } = await connectToDB();
-  const settings = await getSettingsByCategory(db, ctx.params.category);
-  const ranges = await getRangesByCategory(db, ctx.params.category);
+  const settings = await getSettings(db);
+  const ranges = await getRanges(db);
 
   return { props: { settings, ranges } };
 }

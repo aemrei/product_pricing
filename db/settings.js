@@ -31,6 +31,10 @@ export const createSetting = async (db, setting) => {
     .then(({ ops }) => ops[0]);
 };
 
+export const updateSettings = async (db, settings) => {
+  return Promise.all(settings.map(s => db.collection("settings").findOneAndUpdate({_id: s._id}, {$set: s})))
+}
+
 export const getSettings = async (db) => {
   return db.collection("settings").find().toArray();
 };
@@ -49,6 +53,10 @@ export const createRange = async (db, range) => {
     })
     .then(({ ops }) => ops[0]);
 };
+
+export const updateRanges = async (db, ranges) => {
+  return Promise.all(ranges.map(s => db.collection("ranges").findOneAndUpdate({_id: s._id}, {$set: s})))
+}
 
 export const getRanges = async (db) => {
   return db.collection("ranges").find().toArray();
