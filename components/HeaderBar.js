@@ -44,7 +44,7 @@ const HeaderBar = () => {
           </Menu.Item>
         </NextLink>
 
-        <Dropdown item simple text="Settings">
+        <Dropdown item text="Settings">
           <Dropdown.Menu>
             <NextLink href="/settings/product" passHref>
               <Dropdown.Item as="a">
