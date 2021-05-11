@@ -12,13 +12,15 @@ export default function ExchangeRatePage({ exchangeRates = [] }) {
           <Table.Row>
             <Table.HeaderCell>Currency</Table.HeaderCell>
             <Table.HeaderCell>Rate</Table.HeaderCell>
+            <Table.HeaderCell>Date</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {exchangeRates.map((e) => (
-            <Table.Row key={e._id}>
-              <Table.Cell>{e.text}</Table.Cell>
+            <Table.Row key={e.code}>
+              <Table.Cell>{e.name}</Table.Cell>
               <Table.Cell>{e.rate}</Table.Cell>
+              <Table.Cell>{e.date}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

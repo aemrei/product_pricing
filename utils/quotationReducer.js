@@ -41,7 +41,7 @@ function calculatePrice(state) {
     throw new Error("Country could not found", values.country);
   }
 
-  const dollar_rate = exchangeRates.find(c => c._id === "USD");
+  const dollar_rate = exchangeRates.find(c => c.code === "USD");
   if (!dollar_rate) {
     throw new Error("USD rate could not found", values.country);
   }
