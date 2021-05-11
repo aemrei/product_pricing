@@ -79,10 +79,10 @@ const Create = (props) => {
             <Header as="h2">Customer Details</Header>
             <Segment>
               <Grid>
-                <Grid.Column width={6}>
+                <Grid.Column width={4}>
                   <Image fluid src={values.logoUrl || DEFAULT_LOGO} />
                 </Grid.Column>
-                <Grid.Column width={10}>
+                <Grid.Column width={12}>
                   <Form.Input
                     fluid
                     label="Customer Name"
