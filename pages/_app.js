@@ -1,15 +1,31 @@
-import Head from 'next/head'
-import '../styles/globals.css'
-import 'semantic-ui-css/semantic.min.css'
-import HeaderBar from "../components/HeaderBar"
-import { Provider } from 'next-auth/client'
-import {
-  Container,
-  Divider,
-} from "semantic-ui-react"
-import Authorized from "../components/Authorized"
+import Head from "next/head";
+import "../styles/globals.css";
+import "semantic-ui-css/semantic.min.css";
+import HeaderBar from "../components/HeaderBar";
+import { Provider } from "next-auth/client";
+import { Container, Dimmer, Divider, Loader } from "semantic-ui-react";
+import Authorized from "../components/Authorized";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const handleStart = () => setLoading(true);
+    const handleComplete = () => setLoading(false);
+
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
+    };
+  }, []);
 
   return (
     <Provider session={pageProps.session}>
@@ -17,17 +33,21 @@ function MyApp({ Component, pageProps }) {
         <title>Product Pricing</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <HeaderBar/>
+      <HeaderBar />
       <main>
-        <Container style={{ marginTop: '4em' }}>
+        <Container style={{ marginTop: "4em" }}>
+          <Dimmer active={loading}>
+            <Loader size="massive"/>
+          </Dimmer>
+
           <Authorized>
             <Component {...pageProps} />
           </Authorized>
         </Container>
       </main>
-      <Divider/>
+      <Divider />
     </Provider>
   );
 }
 
-export default MyApp
+export default MyApp;

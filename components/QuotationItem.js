@@ -22,12 +22,14 @@ const QuotationItem = ({ quotation }) => {
     <Item>
       <Item.Image src={values.logoUrl || DEFAULT_LOGO} size="tiny" verticalAlign="middle" />
       <Item.Content verticalAlign="middle">
-        <NextLink href={`/quotation/${quotation._id}`} passHref>
-          <Item.Header as="a">
-            {icons.includes(values.country) ? <Icon name={values.country} /> : <Flag name={values.country} />}{" "}
-            {values.customerName}
-          </Item.Header>
-        </NextLink>
+        <Item.Header>
+          <NextLink href={`/quotation/${quotation._id}`} passHref>
+            <a>
+              {icons.includes(values.country) ? <Icon name={values.country} /> : <Flag name={values.country} />}{" "}
+              {values.customerName}
+            </a>
+          </NextLink>
+        </Item.Header>
 
         <Item.Meta>
           {createdByFullName} at {createdAt}
@@ -51,9 +53,9 @@ const QuotationItem = ({ quotation }) => {
             .map((p) => (
               <Label key={p._id} color={PRODUCT_COLORS[p._id]} icon="check circle" content={p.text} />
             ))}
-          <Button primary floated="right" onClick={() => router.push(`/quotation/${quotation._id}`)}>
+          <Button icon labelPosition="right" floated="right" onClick={() => router.push(`/quotation/${quotation._id}`)}>
             Details
-            <Icon name="right chevron" />
+            <Icon name="right arrow" />
           </Button>
         </Item.Extra>
       </Item.Content>
