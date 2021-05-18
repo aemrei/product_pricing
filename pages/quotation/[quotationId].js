@@ -18,8 +18,6 @@ import {
 } from "semantic-ui-react";
 import { connectToDB, getQuotationById } from "../../db";
 
-const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
-
 export default function QuotationDetail({ quotation }) {
   const { productSettings, values, countries, summary, createdAt, createdBy, createdByFullName } = quotation;
   const printableCreatedAt = new Date(createdAt).toDateString();
@@ -33,7 +31,7 @@ export default function QuotationDetail({ quotation }) {
             <Segment>
               <Grid>
                 <Grid.Column width={6}>
-                  <Image fluid src={values.logoUrl || DEFAULT_LOGO} />
+                  <Image fluid src={getLogoURL(values.logoUrl)} />
                 </Grid.Column>
                 <Grid.Column width={10}>
                   <Form.Input fluid transparent readOnly label="Customer Name" value={values.customerName} />

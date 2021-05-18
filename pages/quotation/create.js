@@ -26,8 +26,7 @@ import {
   SET_PROPERTY,
   RESET,
 } from "../../utils/quotationReducer";
-
-const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7a5692da1b8c14dff58.jpeg";
+import { getLogoURL } from "../../utils/media";
 
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
@@ -80,7 +79,7 @@ const Create = (props) => {
             <Segment>
               <Grid>
                 <Grid.Column width={4}>
-                  <Image fluid src={values.logoUrl || DEFAULT_LOGO} />
+                  <Image fluid src={getLogoURL(values.logoUrl)} />
                 </Grid.Column>
                 <Grid.Column width={12}>
                   <Form.Input
@@ -120,27 +119,29 @@ const Create = (props) => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {productSettings.filter(x=>x.order).map((m) => (
-                    <Table.Row key={m._id}>
-                      <Table.Cell collapsing>
-                        {
-                          <Checkbox
-                            toggle
-                            readOnly={m.readOnly}
-                            checked={m.activated}
-                            onChange={() =>
-                              dispatch({
-                                type: SET_PRODUCT_ACTIVATION,
-                                payload: { _id: m._id, activated: !m.activated },
-                              })
-                            }
-                          />
-                        }
-                      </Table.Cell>
-                      <Table.Cell>{m.text}</Table.Cell>
-                      {/* <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell> */}
-                    </Table.Row>
-                  ))}
+                  {productSettings
+                    .filter((x) => x.order)
+                    .map((m) => (
+                      <Table.Row key={m._id}>
+                        <Table.Cell collapsing>
+                          {
+                            <Checkbox
+                              toggle
+                              readOnly={m.readOnly}
+                              checked={m.activated}
+                              onChange={() =>
+                                dispatch({
+                                  type: SET_PRODUCT_ACTIVATION,
+                                  payload: { _id: m._id, activated: !m.activated },
+                                })
+                              }
+                            />
+                          }
+                        </Table.Cell>
+                        <Table.Cell>{m.text}</Table.Cell>
+                        {/* <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell> */}
+                      </Table.Row>
+                    ))}
                 </Table.Body>
               </Table>
             </Segment>
@@ -148,7 +149,7 @@ const Create = (props) => {
             <Segment>
               <Checkbox toggle checked={values.interfaceActivated} onChange={() => toggleValue("interfaceActivated")} />
               <Form.Input
-                readOnly={!values.interfaceActivated}
+                disabled={!values.interfaceActivated}
                 fluid
                 label="Number of required interfaces"
                 value={values.numberOfInterfaces}
