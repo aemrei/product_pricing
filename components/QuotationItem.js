@@ -17,6 +17,7 @@ const PRODUCT_COLORS = {
 const QuotationItem = ({ quotation }) => {
   const router = useRouter();
   const { productSettings, values, summary, createdAt, createdByFullName } = quotation;
+  const printableCreatedAt = new Date(createdAt).toDateString();
 
   return (
     <Item>
@@ -32,7 +33,7 @@ const QuotationItem = ({ quotation }) => {
         </Item.Header>
 
         <Item.Meta>
-          {createdByFullName} at {createdAt}
+          {createdByFullName} at {printableCreatedAt}
         </Item.Meta>
         <Item.Description>
           <Grid>

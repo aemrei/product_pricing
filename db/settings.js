@@ -36,11 +36,7 @@ export const updateSettings = async (db, settings) => {
 }
 
 export const getSettings = async (db) => {
-  return db.collection("settings").find().toArray();
-};
-
-export const getSettingsByCategory = async (db, category) => {
-  return db.collection("settings").find({ category }).toArray();
+  return db.collection("settings").find().sort({order: 1}).toArray();
 };
 
 export const createRange = async (db, range) => {
@@ -59,11 +55,11 @@ export const updateRanges = async (db, ranges) => {
 }
 
 export const getRanges = async (db) => {
-  return db.collection("ranges").find().toArray();
+  return db.collection("ranges").find().sort({upperLimit: 1}).toArray();
 };
 
 export const getRangesByCategory = async (db, category) => {
-  return db.collection("ranges").find({ category }).toArray();
+  return db.collection("ranges").find({ category }).sort({upperLimit: 1}).toArray();
 };
 
 export const getCountries = async (db) => {
@@ -73,8 +69,4 @@ export const getCountries = async (db) => {
     value: c._id,
     ...c,
   }));
-};
-
-export const getProductSettings = async (db) => {
-  return await getSettingsByCategory(db, CATEGORY_PRODUCT);
 };

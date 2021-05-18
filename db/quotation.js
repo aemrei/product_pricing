@@ -9,11 +9,11 @@ export const getQuotationsByUser = async (db, userId) => {
 };
 
 export const getQuotations = async (db) => {
-  return db.collection("quotations").find().toArray();
+  return db.collection("quotations").find().sort({updatedAt: -1}).toArray();
 };
 
 export const createQuotation = async (db, quotation) => {
-  const createdAt = new Date().toDateString();
+  const createdAt = new Date().toISOString();
   return db
     .collection("quotations")
     .insertOne({

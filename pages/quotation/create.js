@@ -116,11 +116,11 @@ const Create = (props) => {
                   <Table.Row>
                     <Table.HeaderCell />
                     <Table.HeaderCell>Module</Table.HeaderCell>
-                    <Table.HeaderCell>Price</Table.HeaderCell>
+                    {/* <Table.HeaderCell>Price</Table.HeaderCell> */}
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {productSettings.map((m) => (
+                  {productSettings.filter(x=>x.order).map((m) => (
                     <Table.Row key={m._id}>
                       <Table.Cell collapsing>
                         {
@@ -138,7 +138,7 @@ const Create = (props) => {
                         }
                       </Table.Cell>
                       <Table.Cell>{m.text}</Table.Cell>
-                      <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell>
+                      {/* <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell> */}
                     </Table.Row>
                   ))}
                 </Table.Body>

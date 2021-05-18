@@ -22,6 +22,7 @@ const DEFAULT_LOGO = "https://www.logolynx.com/images/logolynx/9a/9ac18e68c03ad7
 
 export default function QuotationDetail({ quotation }) {
   const { productSettings, values, countries, summary, createdAt, createdBy, createdByFullName } = quotation;
+  const printableCreatedAt = new Date(createdAt).toDateString();
   const contextRef = useRef(null);
   return (
     <Container>
@@ -48,7 +49,7 @@ export default function QuotationDetail({ quotation }) {
                     transparent
                     readOnly
                     label="Created By"
-                    value={`${createdByFullName} (${createdBy}) at ${createdAt}`}
+                    value={`${createdByFullName} (${createdBy}) at ${printableCreatedAt}`}
                   />
                 </Grid.Column>
               </Grid>

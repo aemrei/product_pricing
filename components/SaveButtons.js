@@ -5,8 +5,8 @@ import {
 export default function SaveButtons({onSave, onReset}) {
   return (
     <Button.Group widths='2'>
-      <Button onClick={onReset}><Icon name="repeat" /> Reset</Button>
-      <Button positive onClick={onSave}><Icon name="save" /> Save</Button>
+      <Button type="button" onClick={onReset}><Icon name="repeat" /> Reset</Button>
+      <Button type="button" positive onClick={onSave}><Icon name="save" /> Save</Button>
     </Button.Group>
   );
 }
