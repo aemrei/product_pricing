@@ -89,8 +89,12 @@ export const quotationReducer = (state, action) => {
         [action.payload.property]: action.payload.value,
       };
 
+      if (action.payload.property === "numberOfInterfaces" && +action.payload.value > 0) {
+        updatedState.values.interfaceActivated = true;
+      }
+
       updatedState.values.numberOfInterfaces =
-        +updatedState.values.numberOfInterfaces * updatedState.values.interfaceActivated;
+        (+updatedState.values.numberOfInterfaces || 0) * updatedState.values.interfaceActivated;
       break;
     case RESET:
       return initiateQuotationState(action.payload);

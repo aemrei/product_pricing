@@ -149,7 +149,6 @@ const Create = (props) => {
             <Segment>
               <Checkbox toggle checked={values.interfaceActivated} onChange={() => toggleValue("interfaceActivated")} />
               <Form.Input
-                disabled={!values.interfaceActivated}
                 fluid
                 label="Number of required interfaces"
                 value={values.numberOfInterfaces}

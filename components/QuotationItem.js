@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { Item, Flag, Label, Icon, Button, Comment, Header, Grid } from "semantic-ui-react";
+import { getLogoURL } from "../utils/media";
 
 const icons = ["eur", "usd"];
 const PRODUCT_COLORS = {
