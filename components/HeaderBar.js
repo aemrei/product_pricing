@@ -74,12 +74,6 @@ const HeaderBar = () => {
             <NextLink href="/settings/bigmac" passHref>
               <Dropdown.Item as="a">🍔🍔 BigMac Index</Dropdown.Item>
             </NextLink>
-            <NextLink href="/settings/exchange" passHref>
-              <Dropdown.Item as="a">
-                <Icon name="eur" />
-                Exchange Rates
-              </Dropdown.Item>
-            </NextLink>
           </Dropdown.Menu>
         </Dropdown>
         <Menu.Item position="right">

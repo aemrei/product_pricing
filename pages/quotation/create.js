@@ -54,7 +54,10 @@ const createQuotation = async (state) => {
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, props, initiateQuotationState);
-  const { productSettings, values, countries, summary } = state;
+  const { productSettings, values, countries, exchangeRates, summary } = state;
+  const bigMacRate = countries.find((c) => c._id === values.country);
+  const dollar_rate = exchangeRates.find((c) => c.code === "USD");
+  const printableUpdatedAt = new Date().toDateString();
   const contextRef = useRef(null);
   const router = useRouter();
 
@@ -247,6 +250,22 @@ const Create = (props) => {
                     <Statistic.Label>Maintenance fee</Statistic.Label>
                   </Statistic>
                 </Segment>
+                <Table>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>Calculation Date</Table.Cell>
+                      <Table.Cell> {printableUpdatedAt} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>USD rate</Table.Cell>
+                      <Table.Cell> {dollar_rate.rate.toFixed(2)} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>BigMac Ratio</Table.Cell>
+                      <Table.Cell> {bigMacRate.euro_ratio.toFixed(2)} </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
               </Sticky>
             </Rail>
           </Ref>
