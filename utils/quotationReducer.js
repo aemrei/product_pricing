@@ -36,12 +36,12 @@ function calculatePrice(state) {
   const onetime_eur = prodouct_prices + interface_prices + user_prices + lagalEntityPrice;
   const annual_eur = Math.round((onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100);
 
-  const bigMacRate = countries.find(c => c._id === values.country);
+  const bigMacRate = countries.find((c) => c._id === values.country);
   if (!bigMacRate) {
     throw new Error("Country could not found", values.country);
   }
 
-  const dollar_rate = exchangeRates.find(c => c.code === "USD");
+  const dollar_rate = exchangeRates.find((c) => c.code === "USD");
   if (!dollar_rate) {
     throw new Error("USD rate could not found", values.country);
   }
@@ -70,7 +70,7 @@ export const quotationReducer = (state, action) => {
 
   switch (action.type) {
     case SET_PRODUCT_ACTIVATION:
-      const basePrice = updatedState.productSettings.find(p => p._id === "base");
+      const basePrice = updatedState.productSettings.find((p) => p._id === "base");
       basePrice.activated = false;
       updatedState.productSettings = updatedState.productSettings.map((p) => {
         if (p._id === action.payload._id) {
@@ -81,7 +81,7 @@ export const quotationReducer = (state, action) => {
         }
         return p;
       });
-      basePrice.activated = updatedState.productSettings.some(p => p.activated);
+      basePrice.activated = updatedState.productSettings.some((p) => p.activated);
       break;
     case SET_PROPERTY:
       updatedState.values = {
@@ -95,6 +95,9 @@ export const quotationReducer = (state, action) => {
 
       updatedState.values.numberOfInterfaces =
         (+updatedState.values.numberOfInterfaces || 0) * updatedState.values.interfaceActivated;
+
+      updatedState.values.numberOfUsers = +updatedState.values.numberOfUsers || 0;
+      updatedState.values.numberOfLegalEntities = +updatedState.values.numberOfLegalEntities || 0;
       break;
     case RESET:
       return initiateQuotationState(action.payload);
