@@ -20,8 +20,10 @@ import { connectToDB, getQuotationById } from "../../db";
 import { getLogoURL } from "../../utils/media";
 
 export default function QuotationDetail({ quotation }) {
-  const { productSettings, values, countries, summary, createdAt, createdBy, createdByFullName } = quotation;
-  const printableCreatedAt = new Date(createdAt).toDateString();
+  const { productSettings, values, countries, summary, updatedAt, exchangeRates, createdByFullName } = quotation;
+  const bigMacRate = countries.find((c) => c._id === values.country);
+  const dollar_rate = exchangeRates.find((c) => c.code === "USD");
+  const printableUpdatedAt = new Date(updatedAt).toDateString();
   const contextRef = useRef(null);
   return (
     <Container>
@@ -43,13 +45,8 @@ export default function QuotationDetail({ quotation }) {
                     placeholder="Select country where the customer is located"
                     options={countries}
                   />
-                  <Form.Input
-                    fluid
-                    transparent
-                    readOnly
-                    label="Created By"
-                    value={`${createdByFullName} (${createdBy}) at ${printableCreatedAt}`}
-                  />
+                  <Form.Input fluid transparent readOnly label="Created By" value={createdByFullName} />
+                  <Form.Input fluid transparent readOnly label="Last update" value={printableUpdatedAt} />
                 </Grid.Column>
               </Grid>
             </Segment>
@@ -166,6 +163,22 @@ export default function QuotationDetail({ quotation }) {
                     <Statistic.Label>Maintenance fee</Statistic.Label>
                   </Statistic>
                 </Segment>
+                <Table>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>Calculation Date</Table.Cell>
+                      <Table.Cell> {printableUpdatedAt} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>USD rate</Table.Cell>
+                      <Table.Cell> {dollar_rate.rate.toFixed(2)} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>BigMac Ratio</Table.Cell>
+                      <Table.Cell> {bigMacRate.euro_ratio.toFixed(2)} </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
               </Sticky>
             </Rail>
           </Ref>
