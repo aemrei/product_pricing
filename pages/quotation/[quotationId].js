@@ -17,6 +17,7 @@ import {
   Table,
 } from "semantic-ui-react";
 import { connectToDB, getQuotationById } from "../../db";
+import { getLogoURL } from "../../utils/media";
 
 export default function QuotationDetail({ quotation }) {
   const { productSettings, values, countries, summary, createdAt, createdBy, createdByFullName } = quotation;
