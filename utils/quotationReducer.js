@@ -148,6 +148,7 @@ export const initiateQuotationState = ({
     ranges,
     role,
     values: {
+      archived: false,
       interfaceActivated: false,
       additionalRemarks: "",
       country: "eur",

@@ -15,6 +15,7 @@ import {
   Icon,
   Divider,
   Image,
+  Message,
 } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB, getExchangeRates } from "../../db";
@@ -241,6 +242,18 @@ const Create = (props) => {
                 onChange={(e, { value }) => setValue("additionalRemarks", value)}
               />
             </Segment>
+            {permissions.archiveItem && (
+              <Segment>
+                <Checkbox
+                  label="Complete and archive this document"
+                  checked={values.archived}
+                  onChange={(e, { checked }) => setValue("archived", checked)}
+                />
+                {values.archived && <Message
+                  header="This will make this document read-only."
+                />}
+              </Segment>
+            )}
             <SaveButtons
               onSave={() => createQuotation(state).then((quotation) => router.push(`/quotation/${quotation._id}`))}
               onReset={() => dispatch({ type: RESET, payload: { ...props, role } })}
