@@ -4,7 +4,41 @@ import { getUsers, getRoles } from "../../db";
 import { getSession } from "next-auth/client";
 import { useState } from "react";
 
-export default function BigMacPage({ users, roles }) {
+const saveMaintainedUser = async (data) => {
+  await fetch(`/api/user`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+function UserRow({ user, roles }) {
+  const [updatedUser, setUpdatedUser] = useState(user);
+  return (
+    <Table.Row>
+      <Table.Cell>{updatedUser.name}</Table.Cell>
+      <Table.Cell>{updatedUser.email}</Table.Cell>
+      <Table.Cell>
+        <Select
+          value={updatedUser.role}
+          onChange={(e, { value }) => {
+            const newValue = { ...updatedUser, role: value };
+            setUpdatedUser(newValue);
+            saveMaintainedUser(newValue);
+          }}
+          options={roles}
+        />
+      </Table.Cell>
+      <Table.Cell>
+        <Checkbox checked={updatedUser.admin} readOnly={true} disabled={true} />
+      </Table.Cell>
+    </Table.Row>
+  );
+}
+
+export default function UserMaintainPage({ users, roles }) {
   return (
     <Container text>
       <Header>Users</Header>
@@ -19,16 +53,7 @@ export default function BigMacPage({ users, roles }) {
         </Table.Header>
         <Table.Body>
           {users.map((u) => (
-            <Table.Row key={u.email}>
-              <Table.Cell>{u.name}</Table.Cell>
-              <Table.Cell>{u.email}</Table.Cell>
-              <Table.Cell>
-                <Select value={u.role} onChange={() => {}} options={roles} />
-              </Table.Cell>
-              <Table.Cell>
-                <Checkbox checked={u.admin} readOnly={true} disabled={true} />
-              </Table.Cell>
-            </Table.Row>
+            <UserRow key={u.email} user={u} roles={roles} />
           ))}
         </Table.Body>
       </Table>
