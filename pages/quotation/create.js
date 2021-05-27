@@ -27,6 +27,7 @@ import {
   RESET,
 } from "../../utils/quotationReducer";
 import { getLogoURL } from "../../utils/media";
+import { useSession } from "next-auth/client";
 
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
@@ -54,12 +55,18 @@ const createQuotation = async (state) => {
 
 const Create = (props) => {
   const [state, dispatch] = useReducer(quotationReducer, props, initiateQuotationState);
+  const [session, loading] = useSession();
   const { productSettings, values, countries, exchangeRates, summary } = state;
   const bigMacRate = countries.find((c) => c._id === values.country);
   const dollar_rate = exchangeRates.find((c) => c.code === "USD");
   const printableUpdatedAt = new Date().toDateString();
   const contextRef = useRef(null);
   const router = useRouter();
+  const permissions = session?.user?.role?.permissions || {};
+
+  if (!permissions.createItem) {
+    return <span>You are not authorized.</span>
+  }
 
   const toggleValue = (name) =>
     dispatch({
@@ -233,8 +240,8 @@ const Create = (props) => {
             />
           </Form>
           <Ref innerRef={contextRef}>
-            <Rail dividing position="right">
-              <Sticky context={contextRef} bottomOffset={50} offset={50} pushing>
+            <Rail dividing position="right" style={{zIndex: 9}}>
+              <Sticky context={contextRef} bottomOffset={50} offset={70} pushing>
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>

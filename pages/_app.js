@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <HeaderBar />
       <main>
-        <Container style={{ marginTop: "4em" }}>
+        <Container style={{ marginTop: "5em" }}>
           <Dimmer active={loading}>
             <Loader size="massive"/>
           </Dimmer>
