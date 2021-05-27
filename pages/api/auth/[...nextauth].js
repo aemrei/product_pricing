@@ -93,9 +93,10 @@ export default NextAuth({
       const dbUser = await getUserById(db, user.id);
 
       session.user.id = user.id;
-      session.user.admin = dbUser.admin;
+      if (dbUser[0]?.admin) {
+        session.user.admin = true;
+      }
       session.user.role = dbUser[0]?.role[0];
-
       return session;
     },
 

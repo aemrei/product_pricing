@@ -87,6 +87,14 @@ const HeaderBar = () => {
           </Dropdown>
         )}
 
+        {session?.user?.admin && (
+          <NextLink href="/settings/users" passHref>
+            <Menu.Item as="a" header>
+              Maintain Users
+            </Menu.Item>
+          </NextLink>
+        )}
+
         <Menu.Menu position="right">
           <Dropdown
             item
