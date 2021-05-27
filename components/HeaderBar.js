@@ -1,36 +1,41 @@
-import {
-  Button,
-  Container,
-  Dropdown,
-  Icon,
-  Menu,
-} from "semantic-ui-react"
+import { Button, Container, Dropdown, Icon, Label, Menu } from "semantic-ui-react";
 import NextLink from "next/link";
-import {signIn, signOut, useSession} from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/client";
 
 const GoToHome = () => (
   <NextLink href="/" passHref>
-    <Menu.Item as='a' header>
+    <Menu.Item as="a" header>
       🌎 FitGlobal Product Pricing
+      {process.env.NODE_ENV === "development" && (
+        <Label color="yellow">
+          <Icon name="warning sign" />
+          <Label.Detail>Development</Label.Detail>
+        </Label>
+      )}
     </Menu.Item>
   </NextLink>
-)
+);
 
 const HeaderBar = () => {
   const [session, loading] = useSession();
 
-  if (!session || loading ) {
+  if (!session || loading) {
     return (
-      <Menu fixed='top' inverted>
+      <Menu fixed="top" inverted>
         <Container>
-          <GoToHome/>
+          <GoToHome />
 
-          <Menu.Item position='right'>
-            {!loading && <Button primary onClick={() => signIn("google")}><Icon name="sign-in"/>Login</Button>}
+          <Menu.Item position="right">
+            {!loading && (
+              <Button primary onClick={() => signIn("google")}>
+                <Icon name="sign-in" />
+                Login
+              </Button>
+            )}
           </Menu.Item>
         </Container>
       </Menu>
-    )
+    );
   }
 
   return (
@@ -86,6 +91,6 @@ const HeaderBar = () => {
       </Container>
     </Menu>
   );
-}
+};
 
 export default HeaderBar;
