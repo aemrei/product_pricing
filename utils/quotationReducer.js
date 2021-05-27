@@ -66,7 +66,7 @@ function calculatePrice(state) {
 }
 
 export const quotationReducer = (state, action) => {
-  const { summary, ...updatedState } = { ...state };
+  const { summary, role, ...updatedState } = { ...state };
 
   switch (action.type) {
     case SET_PRODUCT_ACTIVATION:
@@ -98,6 +98,10 @@ export const quotationReducer = (state, action) => {
 
       updatedState.values.numberOfUsers = +updatedState.values.numberOfUsers || 0;
       updatedState.values.numberOfLegalEntities = +updatedState.values.numberOfLegalEntities || 0;
+
+      const discountPercentage = +updatedState.values.discountPercentage || 0;
+      const maxDiscountPercent = +role.maxDiscountPercent || 0;
+      updatedState.values.discountPercentage = Math.max(0, Math.min(maxDiscountPercent, discountPercentage));
       break;
     case RESET:
       return initiateQuotationState(action.payload);
@@ -107,6 +111,7 @@ export const quotationReducer = (state, action) => {
 
   const result = {
     ...updatedState,
+    role,
     summary: calculatePrice(updatedState),
   };
 
@@ -117,7 +122,13 @@ const filterByCategory = (list, category) => {
   return list.filter((i) => i.category === category);
 };
 
-export const initiateQuotationState = ({ ranges = [], settings = [], countries = [], exchangeRates = [] }) => {
+export const initiateQuotationState = ({
+  role = {},
+  ranges = [],
+  settings = [],
+  countries = [],
+  exchangeRates = [],
+}) => {
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
     activated: false,
@@ -135,11 +146,13 @@ export const initiateQuotationState = ({ ranges = [], settings = [], countries =
     productSettings,
     settingsAsObject,
     ranges,
+    role,
     values: {
       interfaceActivated: false,
       additionalRemarks: "",
       country: "eur",
       customerName: "",
+      discountPercentage: 0,
       logoUrl: "",
       numberOfInterfaces: 0,
       numberOfUsers: 0,

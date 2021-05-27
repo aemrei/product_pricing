@@ -2,8 +2,8 @@ export const UPDATE_SETTING = "UPDATE_SETTING";
 export const UPDATE_RANGE = "UPDATE_RANGE";
 export const RESET = "RESET";
 
-export function initCategoryReducer({ settings, ranges }) {
-  return { settings, ranges };
+export function initCategoryReducer({ settings, ranges, role }) {
+  return { settings, ranges, role };
 }
 
 export function categoryReducer(state, action) {

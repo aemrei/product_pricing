@@ -146,8 +146,8 @@ export default function QuotationDetail({ quotation }) {
             </Segment>
           </Form>
           <Ref innerRef={contextRef}>
-            <Rail dividing position="right">
-              <Sticky context={contextRef} bottomOffset={50} offset={50} pushing>
+            <Rail dividing position="right" style={{ zIndex: 9 }}>
+              <Sticky context={contextRef} bottomOffset={50} offset={70} pushing>
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>

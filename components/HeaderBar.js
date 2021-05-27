@@ -19,7 +19,6 @@ const GoToHome = () => (
 const HeaderBar = () => {
   const [session, loading] = useSession();
   const permissions = session?.user?.role?.permissions || {};
-  console.log(permissions);
 
   if (!session || loading) {
     return (
