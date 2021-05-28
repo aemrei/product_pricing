@@ -19,12 +19,18 @@ export const getUserByEmail = async (db, email) => {
 };
 
 export const getUsers = async (db) => {
-  return db.collection("users").find({}).sort({name: 1}).toArray();
+  return db.collection("users").find({}).sort({ name: 1 }).toArray();
 };
 
 export const getRoles = async (db) => {
-  return db.collection("roles").find({}).toArray();
+  return db.collection("roles").find({}).sort({ order: 1 }).toArray();
 };
+
+export async function updateRole(db, currentUser, role) {
+  if (currentUser.admin) {
+    return db.collection("roles").findOneAndUpdate({ _id: role._id }, { $set: role });
+  }
+}
 
 export async function setUserRole(db, currentUser, email, role) {
   if (currentUser.admin) {

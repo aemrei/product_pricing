@@ -88,7 +88,7 @@ const HeaderBar = () => {
         )}
 
         {session?.user?.admin && (
-          <NextLink href="/settings/users" passHref>
+          <NextLink href="/settings/admin" passHref>
             <Menu.Item as="a" header>
               Maintain Users
             </Menu.Item>

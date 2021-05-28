@@ -13,7 +13,6 @@ handler.post(async (req, res) => {
   if (role) {
     const dbUser = await getUserByEmail(req.db, req.user.email);
     const updatedUser = await setUserRole(req.db, dbUser, email, role);
-    console.log({ admin: dbUser.admin, role: role });
     res.send({ data: updatedUser });
   }
 });
