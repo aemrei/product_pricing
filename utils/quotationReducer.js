@@ -33,7 +33,7 @@ function calculatePrice(state) {
 
   const lagalEntityPrice = (values.numberOfLegalEntities - 1) * settingsAsObject.perLegalEntity.value;
 
-  const onetime_eur = prodouct_prices + interface_prices + user_prices + lagalEntityPrice;
+  const onetime_eur = Math.round((100 - values.discountPercentage) * (prodouct_prices + interface_prices + user_prices + lagalEntityPrice) / 100);
   const annual_eur = Math.round((onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100);
 
   const bigMacRate = countries.find((c) => c._id === values.country);
