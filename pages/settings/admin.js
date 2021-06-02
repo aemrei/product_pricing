@@ -174,7 +174,7 @@ export async function getServerSideProps(ctx) {
     email: u.email,
     name: u.name,
     role: u.role,
-    admin: u.admin,
+    admin: u.admin || false,
   }));
 
   const roles = await getRoles(db);
