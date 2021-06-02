@@ -17,8 +17,8 @@ export const createQuotation = async (db, quotation) => {
   return db
     .collection("quotations")
     .insertOne({
-      _id: nanoid(12),
       ...quotation,
+      _id: nanoid(12),
       createdAt,
       updatedAt: createdAt,
     })
@@ -26,7 +26,7 @@ export const createQuotation = async (db, quotation) => {
 };
 
 export const updateQuotation = async (db, id, updates) => {
-  const updatedAt = new Date().toDateString();
+  const updatedAt = new Date().toISOString();
   const operation = await db.collection("quotations").updateOne(
     {
       _id: id,

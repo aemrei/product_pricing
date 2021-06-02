@@ -6,7 +6,7 @@ export default function Home({ quotations = [] }) {
   const [session, loading] = useSession();
   const role = session?.user?.role || {};
   const permissions = role.permissions || {};
-  console.log({permissions})
+
   if (!permissions?.readList) {
     return <span>You are not authorized.</span>;
   }
