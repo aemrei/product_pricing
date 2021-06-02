@@ -1,5 +1,7 @@
-import NextAuth from "next-auth"
-import Providers from "next-auth/providers"
+import NextAuth from "next-auth";
+import Providers from "next-auth/providers";
+import { connectToDB } from "../../../db/connect";
+import { getUserById, setUserRole } from "../../../db/user";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -72,18 +74,49 @@ export default NextAuth({
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
     async signIn(user, account, profile) {
-      if (account.provider === 'google' &&
-          profile.verified_email === true &&
-          profile.email.endsWith('@fit-global.com')) {
-        return true
+      if (
+        account.provider === "google" &&
+        profile.verified_email === true &&
+        profile.email.endsWith("@fit-global.com")
+      ) {
+        return true;
       } else {
-        return false
+        return false;
       }
     },
     // async signIn(user, account, profile) { return true },
     // async redirect(url, baseUrl) { return baseUrl },
-    // async session(session, user) { return session },
-    // async jwt(token, user, account, profile, isNewUser) { return token }
+    async session(session, user) {
+      console.log("async session");
+
+      const { db } = await connectToDB();
+      const dbUser = await getUserById(db, user.id);
+
+      session.user.id = user.id;
+      if (dbUser[0]?.admin) {
+        session.user.admin = true;
+      }
+      session.user.role = dbUser[0]?.role[0];
+      return session;
+    },
+
+    async jwt(token, user, account, profile, isNewUser) {
+      console.log("async jwt");
+      const { db } = await connectToDB();
+
+      if (isNewUser) {
+        await setUserRole(db, { admin: true }, user.email, "guest");
+      }
+      if (token && user) {
+        return {
+          ...token,
+          ...user,
+        };
+      }
+      return {
+        ...token,
+      };
+    },
   },
 
   // Events are useful for logging
@@ -92,4 +125,4 @@ export default NextAuth({
 
   // Enable debug messages in the console if you are having problems
   debug: false,
-})
+});

@@ -2,7 +2,7 @@ import { Container, Header, Input, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
 import { getSettings, getRanges } from "../../db/settings";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { categoryReducer, initCategoryReducer, RESET, UPDATE_RANGE, UPDATE_SETTING } from "../../utils/settingsReducer";
 import { useReducer } from "react";
@@ -30,6 +30,7 @@ function SettingsTable({ settings, dispatch }) {
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Type</Table.HeaderCell>
+          <Table.HeaderCell collapsing>Code</Table.HeaderCell>
           <Table.HeaderCell collapsing>Value</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
@@ -37,6 +38,7 @@ function SettingsTable({ settings, dispatch }) {
         {settings.map((s) => (
           <Table.Row key={s._id}>
             <Table.Cell>{s.text}</Table.Cell>
+            <Table.Cell>AUX01</Table.Cell>
             <Table.Cell>
               <Input
                 label={s.unit}
@@ -95,20 +97,28 @@ function RangeTable({ ranges, dispatch }) {
 
 export default function CategorySettingPage({ settings = [], ranges = [] }) {
   const router = useRouter();
+  const [session, loading] = useSession();
   const [state, dispatch] = useReducer(categoryReducer, { settings, ranges }, initCategoryReducer);
   const title = PAGE_TITLES[router.query.category] || "Settings";
   const categorySettings = state.settings.filter((s) => s.category === router.query.category);
   const categoryRanges = state.ranges.filter((r) => r.category === router.query.category);
+  const permissions = session?.user?.role?.permissions || {};
+
+  if (!permissions.displaySettings) {
+    return <span>You are not authorized.</span>;
+  }
 
   return (
     <Container text>
       <Header>{title}</Header>
       <SettingsTable settings={categorySettings} dispatch={dispatch} />
       <RangeTable ranges={categoryRanges} dispatch={dispatch} />
-      <SaveButtons
-        onReset={() => dispatch({ type: RESET, payload: { settings, ranges } })}
-        onSave={() => saveConfigs({ settings: categorySettings, ranges: categoryRanges })}
-      />
+      {permissions.updateSettings && (
+        <SaveButtons
+          onReset={() => dispatch({ type: RESET, payload: { settings, ranges } })}
+          onSave={() => saveConfigs({ settings: categorySettings, ranges: categoryRanges })}
+        />
+      )}
     </Container>
   );
 }

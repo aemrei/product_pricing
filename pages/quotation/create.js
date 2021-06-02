@@ -15,6 +15,7 @@ import {
   Icon,
   Divider,
   Image,
+  Message,
 } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB, getExchangeRates } from "../../db";
@@ -27,6 +28,7 @@ import {
   RESET,
 } from "../../utils/quotationReducer";
 import { getLogoURL } from "../../utils/media";
+import { useSession } from "next-auth/client";
 
 const saveQuotation = async (quotationId, state) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/${quotationId}`, {
@@ -53,13 +55,20 @@ const createQuotation = async (state) => {
 };
 
 const Create = (props) => {
-  const [state, dispatch] = useReducer(quotationReducer, props, initiateQuotationState);
+  const [session, loading] = useSession();
+  const role = session?.user?.role || {};
+  const [state, dispatch] = useReducer(quotationReducer, { ...props, role }, initiateQuotationState);
   const { productSettings, values, countries, exchangeRates, summary } = state;
   const bigMacRate = countries.find((c) => c._id === values.country);
   const dollar_rate = exchangeRates.find((c) => c.code === "USD");
   const printableUpdatedAt = new Date().toDateString();
   const contextRef = useRef(null);
   const router = useRouter();
+  const permissions = role.permissions || {};
+
+  if (!permissions.createItem) {
+    return <span>You are not authorized.</span>;
+  }
 
   const toggleValue = (name) =>
     dispatch({
@@ -172,6 +181,12 @@ const Create = (props) => {
                 value={values.numberOfLegalEntities}
                 onChange={(e, { value }) => setValue("numberOfLegalEntities", value)}
               />
+              <Form.Input
+                fluid
+                label={`Discount percentage (max: ${role.maxDiscountPercent} %)`}
+                value={values.discountPercentage}
+                onChange={(e, { value }) => setValue("discountPercentage", value)}
+              />
             </Segment>
             <Header as="h2">Summary</Header>
             <Segment.Group raised>
@@ -227,14 +242,26 @@ const Create = (props) => {
                 onChange={(e, { value }) => setValue("additionalRemarks", value)}
               />
             </Segment>
+            {permissions.archiveItem && (
+              <Segment>
+                <Checkbox
+                  label="Complete and archive this document"
+                  checked={values.archived}
+                  onChange={(e, { checked }) => setValue("archived", checked)}
+                />
+                {values.archived && <Message
+                  header="This will make this document read-only."
+                />}
+              </Segment>
+            )}
             <SaveButtons
               onSave={() => createQuotation(state).then((quotation) => router.push(`/quotation/${quotation._id}`))}
-              onReset={() => dispatch({ type: RESET, payload: props })}
+              onReset={() => dispatch({ type: RESET, payload: { ...props, role } })}
             />
           </Form>
           <Ref innerRef={contextRef}>
-            <Rail dividing position="right">
-              <Sticky context={contextRef} bottomOffset={50} offset={50} pushing>
+            <Rail dividing position="right" style={{ zIndex: 9 }}>
+              <Sticky context={contextRef} bottomOffset={50} offset={70} pushing>
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>
