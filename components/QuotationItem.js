@@ -55,7 +55,7 @@ const QuotationItem = ({ quotation }) => {
             ))}
           <Button icon labelPosition="right" floated="right" onClick={() => router.push(`/quotation/${quotation._id}`)}>
             Details
-            <Icon name="right arrow" />
+            <Icon name={quotation.values.archived ? "lock" : "right arrow"} />
           </Button>
         </Item.Extra>
       </Item.Content>
