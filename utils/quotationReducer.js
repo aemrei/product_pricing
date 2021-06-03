@@ -21,7 +21,7 @@ const getActiveRangeValue = (ranges, category, count) => {
 
 function calculatePrice(state) {
   const { settingsAsObject, values, ranges, countries, exchangeRates } = state;
-  const prodouct_prices = state.productSettings.reduce((x, y) => x + y.activated * y.value, 0);
+  const product_prices = state.productSettings.reduce((x, y) => x + y.activated * y.value, 0);
 
   const interface_baseprice = values.interfaceActivated * settingsAsObject.interfaceBasePrice.value;
   const interface_countprice = getActiveRangeValue(ranges, CATEGORY_INTERFACE, +values.numberOfInterfaces);
@@ -33,7 +33,9 @@ function calculatePrice(state) {
 
   const lagalEntityPrice = (values.numberOfLegalEntities - 1) * settingsAsObject.perLegalEntity.value;
 
-  const onetime_eur = Math.round((100 - values.discountPercentage) * (prodouct_prices + interface_prices + user_prices + lagalEntityPrice) / 100);
+  const onetime_eur = Math.round(
+    ((100 - values.discountPercentage) * (product_prices + interface_prices + user_prices + lagalEntityPrice)) / 100,
+  );
   const annual_eur = Math.round((onetime_eur * settingsAsObject.maintenanceFeePerCent.value) / 100);
 
   const bigMacRate = countries.find((c) => c._id === values.country);
@@ -122,29 +124,27 @@ const filterByCategory = (list, category) => {
   return list.filter((i) => i.category === category);
 };
 
-export const initiateQuotationState = ({
-  role = {},
-  ranges = [],
-  settings = [],
-  countries = [],
-  exchangeRates = [],
-}) => {
+export const initiateQuotationState = (props) => {
+  const { role = {}, ranges = [], settings = [], countries = [], exchangeRates = [], settingsAsObject, values } = props;
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
-    activated: false,
+    activated: !!p.activated,
   }));
 
-  const settingsAsObject = settings.reduce((obj, set) => {
-    obj[set._id] = set;
-    return obj;
-  }, {});
+  const settingsAsObjectResult =
+    settingsAsObject ||
+    settings.reduce((obj, set) => {
+      obj[set._id] = set;
+      return obj;
+    }, {});
 
   const result = {
     version: "0.0.1",
+    _id: props._id || "",
     countries: countries,
     exchangeRates,
     productSettings,
-    settingsAsObject,
+    settingsAsObject: settingsAsObjectResult,
     ranges,
     role,
     values: {
@@ -158,6 +158,7 @@ export const initiateQuotationState = ({
       numberOfInterfaces: 0,
       numberOfUsers: 0,
       numberOfLegalEntities: 1,
+      ...values,
     },
     summary: {
       onetime_eur: 0,

@@ -29,16 +29,16 @@ function SettingsTable({ settings, dispatch }) {
     <Table striped compact celled color="orange">
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>Type</Table.HeaderCell>
           <Table.HeaderCell collapsing>Code</Table.HeaderCell>
+          <Table.HeaderCell>Type</Table.HeaderCell>
           <Table.HeaderCell collapsing>Value</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {settings.map((s) => (
+        {settings.map((s, index) => (
           <Table.Row key={s._id}>
+            <Table.Cell>{`12${index}001`}</Table.Cell>
             <Table.Cell>{s.text}</Table.Cell>
-            <Table.Cell>AUX01</Table.Cell>
             <Table.Cell>
               <Input
                 label={s.unit}

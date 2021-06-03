@@ -26,7 +26,7 @@ export const createSetting = async (db, setting) => {
     .insertOne({
       _id: nanoid(12),
       ...setting,
-      createdAt: new Date().toDateString(),
+      createdAt: new Date().toISOString(),
     })
     .then(({ ops }) => ops[0]);
 };
@@ -45,7 +45,7 @@ export const createRange = async (db, range) => {
     .insertOne({
       _id: nanoid(12),
       ...range,
-      createdAt: new Date().toDateString(),
+      createdAt: new Date().toISOString(),
     })
     .then(({ ops }) => ops[0]);
 };
