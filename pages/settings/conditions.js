@@ -1,4 +1,4 @@
-import { Container, Form, Header, Table } from "semantic-ui-react";
+import { Container, Form, Header, Icon, Popup, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
 import { getConditions } from "../../db/conditions";
@@ -17,13 +17,25 @@ const saveConditions = async (data) => {
   });
 };
 
-function FieldInput({ name, row, updateField, isTechnical }) {
+function StringField({ name, row, updateField, isTechnical, width }) {
   return (
     <Form.Input
       value={row[name]}
-      style={{ width: isTechnical ? "5rem" : "10rem" }}
+      style={{ width: width || (isTechnical ? "5rem" : "10rem") }}
       onChange={(e, { value }) => {
         updateField(row._id, name, value);
+      }}
+    />
+  );
+}
+
+function NumericField({ name, row, updateField, isTechnical }) {
+  return (
+    <Form.Input
+      value={row[name]}
+      style={{ width: isTechnical ? "7rem" : "14rem" }}
+      onChange={(e, { value }) => {
+        updateField(row._id, name, +value);
       }}
     />
   );
@@ -43,7 +55,7 @@ function FieldCheckbox({ name, row, updateField, isTechnical }) {
 
 function ConditionsTable({ conditions, isTechnical, updateField }) {
   return (
-    <Container>
+    <Container style={{ overflow: "auto", maxWidth: 1200 }}>
       <Table striped compact celled color="orange">
         <Table.Header>
           <Table.Row>
@@ -56,10 +68,11 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             <Table.HeaderCell collapsing>Unit Price</Table.HeaderCell>
             <Table.HeaderCell collapsing>Unit</Table.HeaderCell>
             {isTechnical && <Table.HeaderCell collapsing>Manual</Table.HeaderCell>}
-            {isTechnical && <Table.HeaderCell>Calculation</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Result</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Stat?</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Tech?</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>Error</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell>Calculation</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -73,7 +86,7 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                   <Table.Cell collapsing>{c.type}</Table.Cell>
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      <FieldInput
+                      <NumericField
                         name="order"
                         row={c}
                         isTechnical={isTechnical}
@@ -83,7 +96,7 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                   )}
                   {isTechnical && <Table.Cell collapsing>{c.calcOrder}</Table.Cell>}
                   <Table.Cell collapsing>
-                    <FieldInput
+                    <NumericField
                       name="unitPrice"
                       row={c}
                       isTechnical={isTechnical}
@@ -93,7 +106,7 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                   <Table.Cell collapsing>{c.unit}</Table.Cell>
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      <FieldInput
+                      <NumericField
                         name="manual"
                         row={c}
                         isTechnical={isTechnical}
@@ -102,16 +115,10 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                     </Table.Cell>
                   )}
                   {isTechnical && (
-                    <Table.Cell>
-                      <FieldInput
-                        name="calculation"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
+                    <Table.Cell collapsing>
+                      {typeof c.result === "number" ? c.result.toLocaleString() : c.result}
                     </Table.Cell>
                   )}
-                  {isTechnical && <Table.Cell collapsing>{c.result}</Table.Cell>}
                   {isTechnical && (
                     <Table.Cell collapsing>
                       <FieldCheckbox
@@ -129,6 +136,28 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                         row={c}
                         isTechnical={isTechnical}
                         updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      {c.errorText && (
+                        <Popup
+                          trigger={<Icon circular name="exclamation circle" />}
+                          content={c.errorText}
+                          inverted
+                        />
+                      )}
+                    </Table.Cell>
+                  )}
+                  {isTechnical && (
+                    <Table.Cell>
+                      <StringField
+                        name="calculation"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                        width="50rem"
                       />
                     </Table.Cell>
                   )}
@@ -156,7 +185,12 @@ export default function CategorySettingPage({ conditions = [] }) {
   };
 
   const simulate = () => {
-    setData(simulateConditions(data));
+    const configs = {
+      maintenanceFeePercent: 25,
+      dollarRate: 2,
+      bigMacRatio: 1.5,
+    };
+    setData(simulateConditions(data, configs));
   };
 
   if (!permissions.displaySettings) {

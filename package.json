@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "jsonata": "^1.8.4",
     "mongodb": "^3.6.6",
     "nanoid": "^3.1.22",
     "next": "10.1.3",
