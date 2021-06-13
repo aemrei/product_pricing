@@ -5,6 +5,7 @@ import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
 import { RESET } from "../../utils/settingsReducer";
 import { useState } from "react";
+import simulateConditions from "../../utils/simulateConditions";
 
 const saveConditions = async (data) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/config`, {
@@ -50,14 +51,13 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             {isTechnical && <Table.HeaderCell>Category</Table.HeaderCell>}
             <Table.HeaderCell collapsing>Name</Table.HeaderCell>
             <Table.HeaderCell collapsing>Type</Table.HeaderCell>
-            <Table.HeaderCell collapsing>Order</Table.HeaderCell>
+            {isTechnical && <Table.HeaderCell collapsing>Order</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
             <Table.HeaderCell collapsing>Unit Price</Table.HeaderCell>
             <Table.HeaderCell collapsing>Unit</Table.HeaderCell>
             {isTechnical && <Table.HeaderCell collapsing>Manual</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell>Calculation</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Result</Table.HeaderCell>}
-            {isTechnical && <Table.HeaderCell collapsing>Remarks</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Stat?</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Tech?</Table.HeaderCell>}
           </Table.Row>
@@ -71,7 +71,16 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                   {isTechnical && <Table.Cell collapsing>{c.category}</Table.Cell>}
                   <Table.Cell collapsing>{c.name}</Table.Cell>
                   <Table.Cell collapsing>{c.type}</Table.Cell>
-                  <Table.Cell collapsing>{c.order}</Table.Cell>
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <FieldInput
+                        name="order"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
                   {isTechnical && <Table.Cell collapsing>{c.calcOrder}</Table.Cell>}
                   <Table.Cell collapsing>
                     <FieldInput
@@ -103,7 +112,6 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                     </Table.Cell>
                   )}
                   {isTechnical && <Table.Cell collapsing>{c.result}</Table.Cell>}
-                  {isTechnical && <Table.Cell collapsing>{c.remarks}</Table.Cell>}
                   {isTechnical && (
                     <Table.Cell collapsing>
                       <FieldCheckbox
@@ -136,15 +144,19 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
 
 export default function CategorySettingPage({ conditions = [] }) {
   const [session, loading] = useSession();
-  const [isTechnical, setIsTechnical] = useState(true);
+  const [isTechnical, setIsTechnical] = useState(false);
   const [data, setData] = useState(conditions);
   const permissions = session?.user?.role?.permissions || {};
 
   const updateField = (_id, name, value) => {
-    const index = data.findIndex((d) => (d._id === _id));
+    const index = data.findIndex((d) => d._id === _id);
     const row = data[index];
     const newRow = { ...row, [name]: value };
     setData([...data.slice(0, index), newRow, ...data.slice(index + 1)]);
+  };
+
+  const simulate = () => {
+    setData(simulateConditions(data));
   };
 
   if (!permissions.displaySettings) {
@@ -164,8 +176,13 @@ export default function CategorySettingPage({ conditions = [] }) {
       <Form.Checkbox
         checked={isTechnical}
         onChange={(e, { checked }) => setIsTechnical(checked)}
-        label="Show technical data"
+        label="Advanced view"
       />
+      {isTechnical && (
+        <Form.Button type="button" onClick={simulate}>
+          Simulate
+        </Form.Button>
+      )}
     </Container>
   );
 }
