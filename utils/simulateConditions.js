@@ -26,6 +26,7 @@ export default function simulateConditions(conditions, configs) {
           }
         } catch (e) {
           errorText = e.message;
+          console.error(e);
         }
         lineResult = [
           ...lineResult.slice(0, index),

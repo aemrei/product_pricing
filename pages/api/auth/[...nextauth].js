@@ -96,6 +96,9 @@ export default NextAuth({
       if (dbUser[0]?.admin) {
         session.user.admin = true;
       }
+      if (dbUser[0]?.technical) {
+        session.user.technical = true;
+      }
       session.user.role = dbUser[0]?.role[0];
       return session;
     },

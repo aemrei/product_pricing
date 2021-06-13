@@ -5,6 +5,7 @@ import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
 import { useState } from "react";
 import simulateConditions from "../../utils/simulateConditions";
+import { getSettings } from "../../db/settings";
 
 const saveConditions = async (conditions) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
@@ -251,13 +252,8 @@ export default function CategorySettingPage(props) {
     const newConditions = [...conditions.slice(0, index), newRow, ...conditions.slice(index + 1)];
     setConditions(newConditions);
 
-    if (isTechnical) {
-      const configs = {
-        maintenanceFeePercent: 25,
-        dollarRate: 2,
-        bigMacRatio: 1.5,
-      };
-      setConditions(simulateConditions(newConditions, configs));
+    if (isTechnical && typeof value === "number") {
+      setConditions(simulateConditions(newConditions, props.settings));
     }
   };
 
@@ -283,11 +279,14 @@ export default function CategorySettingPage(props) {
           onSave={() => saveConditions({ conditions })}
         />
       )}
-      <Form.Checkbox
-        checked={isTechnical}
-        onChange={(e, { checked }) => setIsTechnical(checked)}
-        label="Advanced view"
-      />
+      {session?.user?.technical && (
+        <Form.Checkbox
+          checked={isTechnical}
+          onChange={(e, { checked }) => setIsTechnical(checked)}
+          label="Advanced view"
+        />
+      )}
+      {}
     </Container>
   );
 }
@@ -300,6 +299,7 @@ export async function getServerSideProps(ctx) {
 
   const { db } = await connectToDB();
   const conditions = await getConditions(db);
+  const settings = await getSettings(db);
 
-  return { props: { conditions } };
+  return { props: { conditions, settings } };
 }

@@ -113,6 +113,9 @@ function UserRow({ user, checkboxRoles }) {
       <Table.Cell>
         <Checkbox checked={updatedUser.admin} readOnly={true} disabled={true} />
       </Table.Cell>
+      <Table.Cell>
+        <Checkbox checked={updatedUser.technical} readOnly={true} disabled={true} />
+      </Table.Cell>
     </Table.Row>
   );
 }
@@ -150,6 +153,7 @@ export default function UserMaintainPage({ users, roles, checkboxRoles }) {
             <Table.HeaderCell>e-mail</Table.HeaderCell>
             <Table.HeaderCell>Role</Table.HeaderCell>
             <Table.HeaderCell collapsing>is Admin</Table.HeaderCell>
+            <Table.HeaderCell collapsing>is Tech User</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -175,6 +179,7 @@ export async function getServerSideProps(ctx) {
     name: u.name,
     role: u.role,
     admin: u.admin || false,
+    technical: u.technical || false,
   }));
 
   const roles = await getRoles(db);
