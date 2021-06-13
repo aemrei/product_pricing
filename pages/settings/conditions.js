@@ -16,7 +16,31 @@ const saveConditions = async (data) => {
   });
 };
 
-function ConditionsTable({ conditions, isTechnical }) {
+function FieldInput({ name, row, updateField, isTechnical }) {
+  return (
+    <Form.Input
+      value={row[name]}
+      style={{ width: isTechnical ? "5rem" : "10rem" }}
+      onChange={(e, { value }) => {
+        updateField(row._id, name, value);
+      }}
+    />
+  );
+}
+
+function FieldCheckbox({ name, row, updateField, isTechnical }) {
+  return (
+    <Form.Checkbox
+      checked={row[name]}
+      style={{ width: isTechnical ? "5rem" : "10rem" }}
+      onChange={(e, { checked }) => {
+        updateField(row._id, name, checked);
+      }}
+    />
+  );
+}
+
+function ConditionsTable({ conditions, isTechnical, updateField }) {
   return (
     <Container>
       <Table striped compact celled color="orange">
@@ -50,33 +74,54 @@ function ConditionsTable({ conditions, isTechnical }) {
                   <Table.Cell collapsing>{c.order}</Table.Cell>
                   {isTechnical && <Table.Cell collapsing>{c.calcOrder}</Table.Cell>}
                   <Table.Cell collapsing>
-                    <Form.Input
-                      value={c.unitPrice}
-                      style={{ width: isTechnical ? "5rem" : "10rem" }}
+                    <FieldInput
+                      name="unitPrice"
+                      row={c}
+                      isTechnical={isTechnical}
+                      updateField={updateField}
                     />
                   </Table.Cell>
                   <Table.Cell collapsing>{c.unit}</Table.Cell>
-                  {isTechnical && <Table.Cell collapsing>
-                    <Form.Input
-                      value={c.manual}
-                      style={{ width: isTechnical ? "5rem" : "10rem" }}
-                    />
-                  </Table.Cell>}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <FieldInput
+                        name="manual"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
                   {isTechnical && (
                     <Table.Cell>
-                      <Form.Input value={c.calculation} />
+                      <FieldInput
+                        name="calculation"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
                     </Table.Cell>
                   )}
                   {isTechnical && <Table.Cell collapsing>{c.result}</Table.Cell>}
                   {isTechnical && <Table.Cell collapsing>{c.remarks}</Table.Cell>}
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      <Form.Checkbox checked={c.isStatistical} />
+                      <FieldCheckbox
+                        name="isStatistical"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
                     </Table.Cell>
                   )}
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      <Form.Checkbox checked={c.isTechnical} />
+                      <FieldCheckbox
+                        name="isTechnical"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
                     </Table.Cell>
                   )}
                 </Table.Row>
@@ -92,7 +137,15 @@ function ConditionsTable({ conditions, isTechnical }) {
 export default function CategorySettingPage({ conditions = [] }) {
   const [session, loading] = useSession();
   const [isTechnical, setIsTechnical] = useState(true);
+  const [data, setData] = useState(conditions);
   const permissions = session?.user?.role?.permissions || {};
+
+  const updateField = (_id, name, value) => {
+    const index = data.findIndex((d) => (d._id === _id));
+    const row = data[index];
+    const newRow = { ...row, [name]: value };
+    setData([...data.slice(0, index), newRow, ...data.slice(index + 1)]);
+  };
 
   if (!permissions.displaySettings) {
     return <span>You are not authorized.</span>;
@@ -101,7 +154,7 @@ export default function CategorySettingPage({ conditions = [] }) {
   return (
     <Container text={!isTechnical}>
       <Header>Conditions</Header>
-      <ConditionsTable conditions={conditions} isTechnical={isTechnical}/>
+      <ConditionsTable conditions={data} updateField={updateField} isTechnical={isTechnical} />
       {permissions.updateSettings && (
         <SaveButtons
           onReset={() => dispatch({ type: RESET, payload: { conditions } })}
