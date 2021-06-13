@@ -3,14 +3,13 @@ import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
 import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
-import { RESET } from "../../utils/settingsReducer";
 import { useState } from "react";
 import simulateConditions from "../../utils/simulateConditions";
 
-const saveConditions = async (data) => {
-  await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/config`, {
+const saveConditions = async (conditions) => {
+  await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
     method: "PUT",
-    body: JSON.stringify(data),
+    body: JSON.stringify(conditions),
     headers: {
       "Content-Type": "application/json",
     },
@@ -21,7 +20,7 @@ function StringField({ name, row, updateField, isTechnical, width }) {
   return (
     <Form.Input
       value={row[name]}
-      style={{ width: width || (isTechnical ? "5rem" : "10rem") }}
+      style={{ width: width || "10rem" }}
       onChange={(e, { value }) => {
         updateField(row._id, name, value);
       }}
@@ -80,10 +79,58 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             return (
               (isTechnical || !c.isTechnical) && (
                 <Table.Row key={c._id}>
-                  {isTechnical && <Table.Cell collapsing>{c.productCode}</Table.Cell>}
-                  {isTechnical && <Table.Cell collapsing>{c.category}</Table.Cell>}
-                  <Table.Cell collapsing>{c.name}</Table.Cell>
-                  <Table.Cell collapsing>{c.type}</Table.Cell>
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      {isTechnical ? (
+                        <StringField
+                          name="productCode"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      ) : (
+                        <span>{c.productCode}</span>
+                      )}
+                    </Table.Cell>
+                  )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      {isTechnical ? (
+                        <StringField
+                          name="category"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      ) : (
+                        <span>{c.category}</span>
+                      )}
+                    </Table.Cell>
+                  )}
+                  <Table.Cell collapsing>
+                    {isTechnical ? (
+                      <StringField
+                        name="name"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    ) : (
+                      <span>{c.name}</span>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell collapsing>
+                    {isTechnical ? (
+                      <StringField
+                        name="type"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    ) : (
+                      <span>{c.type}</span>
+                    )}
+                  </Table.Cell>
                   {isTechnical && (
                     <Table.Cell collapsing>
                       <NumericField
@@ -94,7 +141,16 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       />
                     </Table.Cell>
                   )}
-                  {isTechnical && <Table.Cell collapsing>{c.calcOrder}</Table.Cell>}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <NumericField
+                        name="calcOrder"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
                   <Table.Cell collapsing>
                     <NumericField
                       name="unitPrice"
@@ -103,15 +159,26 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       updateField={updateField}
                     />
                   </Table.Cell>
-                  <Table.Cell collapsing>{c.unit}</Table.Cell>
+                  <Table.Cell collapsing>
+                    <StringField
+                      name="unit"
+                      row={c}
+                      isTechnical={isTechnical}
+                      updateField={updateField}
+                    />
+                  </Table.Cell>
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      <NumericField
-                        name="manual"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
+                      {c.isStatistical ? (
+                        <span>{c.manual}</span>
+                      ) : (
+                        <NumericField
+                          name="manual"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      )}
                     </Table.Cell>
                   )}
                   {isTechnical && (
@@ -171,39 +238,48 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
   );
 }
 
-export default function CategorySettingPage({ conditions = [] }) {
+export default function CategorySettingPage(props) {
   const [session, loading] = useSession();
   const [isTechnical, setIsTechnical] = useState(false);
-  const [data, setData] = useState(conditions);
+  const [conditions, setConditions] = useState(props.conditions);
   const permissions = session?.user?.role?.permissions || {};
 
   const updateField = (_id, name, value) => {
-    const index = data.findIndex((d) => d._id === _id);
-    const row = data[index];
+    const index = conditions.findIndex((d) => d._id === _id);
+    const row = conditions[index];
     const newRow = { ...row, [name]: value };
-    setData([...data.slice(0, index), newRow, ...data.slice(index + 1)]);
-  };
+    const newConditions = [...conditions.slice(0, index), newRow, ...conditions.slice(index + 1)];
+    setConditions(newConditions);
 
-  const simulate = () => {
-    const configs = {
-      maintenanceFeePercent: 25,
-      dollarRate: 2,
-      bigMacRatio: 1.5,
-    };
-    setData(simulateConditions(data, configs));
+    if (isTechnical) {
+      const configs = {
+        maintenanceFeePercent: 25,
+        dollarRate: 2,
+        bigMacRatio: 1.5,
+      };
+      setConditions(simulateConditions(newConditions, configs));
+    }
   };
 
   if (!permissions.displaySettings) {
     return <span>You are not authorized.</span>;
   }
 
+  if (loading) {
+    return <span>Loading...</span>;
+  }
+
   return (
     <Container text={!isTechnical}>
       <Header>Conditions</Header>
-      <ConditionsTable conditions={data} updateField={updateField} isTechnical={isTechnical} />
+      <ConditionsTable
+        conditions={conditions}
+        updateField={updateField}
+        isTechnical={isTechnical}
+      />
       {permissions.updateSettings && (
         <SaveButtons
-          onReset={() => dispatch({ type: RESET, payload: { conditions } })}
+          onReset={() => setConditions(props.conditions)}
           onSave={() => saveConditions({ conditions })}
         />
       )}
@@ -212,11 +288,6 @@ export default function CategorySettingPage({ conditions = [] }) {
         onChange={(e, { checked }) => setIsTechnical(checked)}
         label="Advanced view"
       />
-      {isTechnical && (
-        <Form.Button type="button" onClick={simulate}>
-          Simulate
-        </Form.Button>
-      )}
     </Container>
   );
 }

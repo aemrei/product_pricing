@@ -24,3 +24,7 @@ export const updateCondition = async (db, id, updates) => {
   const updated = await db.collection("conditions").findOne({ _id: id });
   return updated;
 };
+
+export const updateConditions = async (db, conditions) => {
+  return Promise.all(conditions.map(c => db.collection("conditions").findOneAndUpdate({_id: c._id}, {$set: c})))
+}
