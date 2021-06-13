@@ -16,7 +16,7 @@ export default function ExchangeRatePage({ exchangeRates = [] }) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {exchangeRates.map((e) => (
+          {Object.values(exchangeRates).map((e) => (
             <Table.Row key={e.code}>
               <Table.Cell>{e.name}</Table.Cell>
               <Table.Cell>{e.rate}</Table.Cell>

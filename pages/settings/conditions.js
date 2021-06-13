@@ -5,7 +5,7 @@ import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
 import { useState } from "react";
 import simulateConditions from "../../utils/simulateConditions";
-import { getSettings } from "../../db/settings";
+import { getCountries, getExchangeRates } from "../../db";
 
 const saveConditions = async (conditions) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
@@ -59,12 +59,10 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
       <Table striped compact celled color="orange">
         <Table.Header>
           <Table.Row>
-            {isTechnical && <Table.HeaderCell collapsing>Code</Table.HeaderCell>}
+            <Table.HeaderCell collapsing>Code</Table.HeaderCell>
             {isTechnical && <Table.HeaderCell>Category</Table.HeaderCell>}
             <Table.HeaderCell collapsing>Name</Table.HeaderCell>
             <Table.HeaderCell collapsing>Type</Table.HeaderCell>
-            {isTechnical && <Table.HeaderCell collapsing>Order</Table.HeaderCell>}
-            {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
             <Table.HeaderCell collapsing>Unit Price</Table.HeaderCell>
             <Table.HeaderCell collapsing>Unit</Table.HeaderCell>
             {isTechnical && <Table.HeaderCell collapsing>Manual</Table.HeaderCell>}
@@ -73,6 +71,9 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             {isTechnical && <Table.HeaderCell collapsing>Tech?</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Error</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell>Calculation</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>Order</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>SettingsOrder</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -80,20 +81,18 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             return (
               (isTechnical || !c.isTechnical) && (
                 <Table.Row key={c._id}>
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      {isTechnical ? (
-                        <StringField
-                          name="productCode"
-                          row={c}
-                          isTechnical={isTechnical}
-                          updateField={updateField}
-                        />
-                      ) : (
-                        <span>{c.productCode}</span>
-                      )}
-                    </Table.Cell>
-                  )}
+                  <Table.Cell collapsing>
+                    {isTechnical ? (
+                      <StringField
+                        name="productCode"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    ) : (
+                      <span>{c.productCode}</span>
+                    )}
+                  </Table.Cell>
                   {isTechnical && (
                     <Table.Cell collapsing>
                       {isTechnical ? (
@@ -132,26 +131,6 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       <span>{c.type}</span>
                     )}
                   </Table.Cell>
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <NumericField
-                        name="order"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <NumericField
-                        name="calcOrder"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
                   <Table.Cell collapsing>
                     <NumericField
                       name="unitPrice"
@@ -229,6 +208,36 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       />
                     </Table.Cell>
                   )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <NumericField
+                        name="order"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <NumericField
+                        name="calcOrder"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <NumericField
+                        name="settingsOrder"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               )
             );
@@ -244,6 +253,8 @@ export default function CategorySettingPage(props) {
   const [isTechnical, setIsTechnical] = useState(false);
   const [conditions, setConditions] = useState(props.conditions);
   const permissions = session?.user?.role?.permissions || {};
+  const [country, setCountry] = useState("eur");
+  const bigMac = props.countries.find((c) => c._id === country);
 
   const updateField = (_id, name, value) => {
     const index = conditions.findIndex((d) => d._id === _id);
@@ -253,7 +264,12 @@ export default function CategorySettingPage(props) {
     setConditions(newConditions);
 
     if (isTechnical && typeof value === "number") {
-      setConditions(simulateConditions(newConditions, props.settings));
+      setConditions(
+        simulateConditions(newConditions, {
+          dollarRate: props.exchanges.usd.rate,
+          bigMacRatio: bigMac.euro_ratio,
+        }),
+      );
     }
   };
 
@@ -286,7 +302,20 @@ export default function CategorySettingPage(props) {
           label="Advanced view"
         />
       )}
-      {}
+      {isTechnical && (
+        <div>
+          <Form.Select
+            label="Test for country"
+            value={country}
+            placeholder="Select country where the customer is located"
+            onChange={(e, { value }) => {
+              setCountry(value);
+            }}
+            options={props.countries}
+          />
+          <span>BigMac Ratio: {bigMac.euro_ratio.toFixed(2)}</span>
+        </div>
+      )}
     </Container>
   );
 }
@@ -299,7 +328,8 @@ export async function getServerSideProps(ctx) {
 
   const { db } = await connectToDB();
   const conditions = await getConditions(db);
-  const settings = await getSettings(db);
+  const exchanges = await getExchangeRates();
+  const countries = await getCountries(db);
 
-  return { props: { conditions, settings } };
+  return { props: { conditions, exchanges, countries } };
 }

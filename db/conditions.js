@@ -5,7 +5,7 @@ export const getConditionById = async (db, id) => {
 };
 
 export const getConditions = async (db) => {
-  return db.collection("conditions").find().toArray();
+  return db.collection("conditions").find().sort({settingsOrder: 1}).toArray();
 };
 
 export const updateCondition = async (db, id, updates) => {
