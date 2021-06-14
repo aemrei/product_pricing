@@ -90,20 +90,12 @@ export const initiateQuotationState = (props) => {
     settings = [],
     countries = [],
     exchanges = [],
-    settingsAsObject,
     values,
   } = props;
   const productSettings = filterByCategory(settings, CATEGORY_PRODUCT).map((p) => ({
     ...p,
     activated: !!p.activated,
   }));
-
-  const settingsAsObjectResult =
-    settingsAsObject ||
-    settings.reduce((obj, set) => {
-      obj[set._id] = set;
-      return obj;
-    }, {});
 
   const result = {
     version: "0.0.1",
@@ -112,7 +104,6 @@ export const initiateQuotationState = (props) => {
     countries: countries,
     exchanges,
     productSettings,
-    settingsAsObject: settingsAsObjectResult,
     ranges,
     role,
     values: {

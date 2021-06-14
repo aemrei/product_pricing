@@ -52,7 +52,7 @@ const QuotationDetail = (props) => {
     { ...props, settings: props.settings || props.productSettings, role },
     initiateQuotationState,
   );
-  const { conditions, productSettings, values, countries, exchanges, summary } = state;
+  const { conditions, values, countries, exchanges, summary } = state;
   const bigMacRate = countries.find((c) => c._id === values.country);
   const dollar_rate = exchanges.usd;
   const calculatedAt = props.updatedAt ? new Date(props.updatedAt) : new Date();

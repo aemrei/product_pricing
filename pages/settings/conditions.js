@@ -64,7 +64,7 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             <Table.HeaderCell collapsing>Name</Table.HeaderCell>
             <Table.HeaderCell collapsing>Type</Table.HeaderCell>
             <Table.HeaderCell collapsing>Unit Price</Table.HeaderCell>
-            <Table.HeaderCell collapsing>Unit</Table.HeaderCell>
+            {isTechnical && <Table.HeaderCell collapsing>Unit</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Manual</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Result</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Stat?</Table.HeaderCell>}
@@ -139,14 +139,16 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       updateField={updateField}
                     />
                   </Table.Cell>
-                  <Table.Cell collapsing>
-                    <StringField
-                      name="unit"
-                      row={c}
-                      isTechnical={isTechnical}
-                      updateField={updateField}
-                    />
-                  </Table.Cell>
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <StringField
+                        name="unit"
+                        row={c}
+                        isTechnical={isTechnical}
+                        updateField={updateField}
+                      />
+                    </Table.Cell>
+                  )}
                   {isTechnical && (
                     <Table.Cell collapsing>
                       {c.isStatistical ? (
