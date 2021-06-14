@@ -55,28 +55,10 @@ const HeaderBar = () => {
         {permissions.displaySettings && (
           <Dropdown item text="Settings">
             <Dropdown.Menu>
-              <NextLink href="/settings/product" passHref>
+              <NextLink href="/settings/conditions" passHref>
                 <Dropdown.Item as="a">
-                  <Icon name="cart" />
-                  Product Prices
-                </Dropdown.Item>
-              </NextLink>
-              <NextLink href="/settings/interface" passHref>
-                <Dropdown.Item as="a">
-                  <Icon name="connectdevelop" />
-                  Interface Prices
-                </Dropdown.Item>
-              </NextLink>
-              <NextLink href="/settings/user" passHref>
-                <Dropdown.Item as="a">
-                  <Icon name="users" />
-                  User Prices
-                </Dropdown.Item>
-              </NextLink>
-              <NextLink href="/settings/fee" passHref>
-                <Dropdown.Item as="a">
-                  <Icon name="money" />
-                  Other Fees
+                  <Icon name="configure" />
+                  Pricing Conditions
                 </Dropdown.Item>
               </NextLink>
               <Dropdown.Divider />

@@ -15,8 +15,11 @@ const PRODUCT_COLORS = {
 
 const QuotationItem = ({ quotation }) => {
   const router = useRouter();
-  const { productSettings, values, summary, createdAt, createdByFullName } = quotation;
+  const { conditions = [], values, summary, createdAt, createdByFullName } = quotation;
   const printableCreatedAt = new Date(createdAt).toDateString();
+  const activeProducts = [
+    ...new Set(conditions.filter((c) => c.productCode && c.result > 0 && PRODUCT_COLORS[c.name]).map((c) => c.name)),
+  ];
 
   return (
     <Item>
@@ -25,7 +28,11 @@ const QuotationItem = ({ quotation }) => {
         <Item.Header>
           <NextLink href={`/quotation/${quotation._id}`} passHref>
             <a>
-              {icons.includes(values.country) ? <Icon name={values.country} /> : <Flag name={values.country} />}{" "}
+              {icons.includes(values.country) ? (
+                <Icon name={values.country} />
+              ) : (
+                <Flag name={values.country} />
+              )}{" "}
               {values.customerName}
             </a>
           </NextLink>
@@ -48,12 +55,15 @@ const QuotationItem = ({ quotation }) => {
           </Grid>
         </Item.Description>
         <Item.Extra>
-          {productSettings
-            .filter((p) => p.activated && p._id !== "base")
-            .map((p) => (
-              <Label key={p._id} color={PRODUCT_COLORS[p._id]} icon="check circle" content={p.text} />
-            ))}
-          <Button icon labelPosition="right" floated="right" onClick={() => router.push(`/quotation/${quotation._id}`)}>
+          {activeProducts.map((name) => (
+            <Label key={name} color={PRODUCT_COLORS[name]} icon="check circle" content={name} />
+          ))}
+          <Button
+            icon
+            labelPosition="right"
+            floated="right"
+            onClick={() => router.push(`/quotation/${quotation._id}`)}
+          >
             Details
             <Icon name={quotation.values.archived ? "lock" : "right arrow"} />
           </Button>
