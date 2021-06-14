@@ -1,6 +1,6 @@
 const AN_HOUR = 60 * 60 * 1000;
 
-export async function getExchangeRates() {
+export async function getExchanges() {
   if (
     !global.exchange ||
     !global.exchange.lastUpdate ||

@@ -5,7 +5,7 @@ import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
 import { useState } from "react";
 import simulateConditions from "../../utils/simulateConditions";
-import { getCountries, getExchangeRates } from "../../db";
+import { getCountries, getExchanges } from "../../db";
 
 const saveConditions = async (conditions) => {
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
@@ -328,7 +328,7 @@ export async function getServerSideProps(ctx) {
 
   const { db } = await connectToDB();
   const conditions = await getConditions(db);
-  const exchanges = await getExchangeRates();
+  const exchanges = await getExchanges();
   const countries = await getCountries(db);
 
   return { props: { conditions, exchanges, countries } };

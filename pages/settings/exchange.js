@@ -1,9 +1,9 @@
 import { Container, Header, Table } from "semantic-ui-react";
 import { connectToDB } from "../../db";
-import { getExchangeRates } from "../../db/externalData";
+import { getExchanges } from "../../db/externalData";
 import { getSession } from "next-auth/client";
 
-export default function ExchangeRatePage({ exchangeRates = [] }) {
+export default function ExchangeRatePage({ exchanges = [] }) {
   return (
     <Container text>
       <Header>Exchange Rates</Header>
@@ -16,7 +16,7 @@ export default function ExchangeRatePage({ exchangeRates = [] }) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {Object.values(exchangeRates).map((e) => (
+          {Object.values(exchanges).map((e) => (
             <Table.Row key={e.code}>
               <Table.Cell>{e.name}</Table.Cell>
               <Table.Cell>{e.rate}</Table.Cell>
@@ -37,7 +37,7 @@ export async function getServerSideProps(ctx) {
 
   const { db } = await connectToDB();
 
-  const exchangeRates = await getExchangeRates(db);
+  const exchanges = await getExchanges(db);
 
-  return { props: { exchangeRates } };
+  return { props: { exchanges } };
 }

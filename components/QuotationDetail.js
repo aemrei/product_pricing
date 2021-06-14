@@ -18,10 +18,11 @@ import {
   Message,
 } from "semantic-ui-react";
 import SaveButtons from "./SaveButtons";
+import SubConditionTable from "./SubConditionTable";
 import {
   quotationReducer,
   initiateQuotationState,
-  SET_PRODUCT_ACTIVATION,
+  SET_CONDITION,
   SET_PROPERTY,
   RESET,
 } from "../utils/quotationReducer";
@@ -50,26 +51,21 @@ const QuotationDetail = (props) => {
     { ...props, settings: props.settings || props.productSettings, role },
     initiateQuotationState,
   );
-  const { productSettings, values, countries, exchangeRates, summary } = state;
+  const { conditions, productSettings, values, countries, exchanges, summary } = state;
   const bigMacRate = countries.find((c) => c._id === values.country);
-  const dollar_rate = exchangeRates.find((c) => c.code === "USD");
+  const dollar_rate = exchanges.usd;
   const calculatedAt = props.updatedAt ? new Date(props.updatedAt) : new Date();
   const printableUpdatedAt = calculatedAt.toDateString();
   const contextRef = useRef(null);
   const router = useRouter();
   const permissions = role.permissions || {};
-  const enableModifications = state._id ? permissions.updateItem && !props.values.archived : permissions.createItem;
+  const enableModifications = state._id
+    ? permissions.updateItem && !props.values.archived
+    : permissions.createItem;
 
   if (!state._id && !permissions.createItem) {
     return <span>You are not authorized.</span>;
   }
-
-  const toggleValue = (name) =>
-    enableModifications &&
-    dispatch({
-      type: SET_PROPERTY,
-      payload: { property: name, value: !values[name] },
-    });
 
   const setValue = (name, value) =>
     enableModifications &&
@@ -77,6 +73,14 @@ const QuotationDetail = (props) => {
       type: SET_PROPERTY,
       payload: { property: name, value: value },
     });
+
+  const setCondition = (condition) => {
+    enableModifications &&
+      dispatch({
+        type: SET_CONDITION,
+        payload: condition,
+      });
+  };
 
   return (
     <Container>
@@ -120,105 +124,33 @@ const QuotationDetail = (props) => {
             </Segment>
             <Header as="h2">Fit-EM Modules</Header>
             <Segment>
-              Customer wants to buy:
-              <Table striped compact celled color="orange">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell />
-                    <Table.HeaderCell>Module</Table.HeaderCell>
-                    {/* <Table.HeaderCell>Price</Table.HeaderCell> */}
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {productSettings
-                    .filter((x) => x.order)
-                    .map((m) => (
-                      <Table.Row key={m._id}>
-                        <Table.Cell collapsing>
-                          {
-                            <Checkbox
-                              toggle
-                              readOnly={m.readOnly}
-                              checked={m.activated}
-                              onChange={() =>
-                                enableModifications &&
-                                dispatch({
-                                  type: SET_PRODUCT_ACTIVATION,
-                                  payload: { _id: m._id, activated: !m.activated },
-                                })
-                              }
-                            />
-                          }
-                        </Table.Cell>
-                        <Table.Cell>{m.text}</Table.Cell>
-                        {/* <Table.Cell>{m.activated ? `${m.unit} ${m.value.toLocaleString()}` : "-"}</Table.Cell> */}
-                      </Table.Row>
-                    ))}
-                </Table.Body>
-              </Table>
+              <SubConditionTable
+                readOnly={!enableModifications}
+                category="Product"
+                conditions={conditions}
+                setCondition={setCondition}
+              />
             </Segment>
             <Header as="h2">Interfaces</Header>
             <Segment>
-              <Checkbox
+              <SubConditionTable
                 readOnly={!enableModifications}
-                toggle
-                checked={values.interfaceActivated}
-                onChange={() => toggleValue("interfaceActivated")}
-              />
-              <Form.Input
-                readOnly={!enableModifications}
-                fluid
-                label="Number of required interfaces"
-                value={values.numberOfInterfaces}
-                onChange={(e, { value }) => setValue("numberOfInterfaces", value)}
+                category="Interface"
+                conditions={conditions}
+                setCondition={setCondition}
               />
             </Segment>
             <Header as="h2">Others</Header>
             <Segment>
-              <Form.Input
+              <SubConditionTable
                 readOnly={!enableModifications}
-                fluid
-                label="Number of SAP Users"
-                value={values.numberOfUsers}
-                onChange={(e, { value }) => setValue("numberOfUsers", value)}
-              />
-              <Form.Input
-                readOnly={!enableModifications}
-                fluid
-                label="Number of Legal Entities"
-                value={values.numberOfLegalEntities}
-                onChange={(e, { value }) => setValue("numberOfLegalEntities", value)}
-              />
-              <Form.Input
-                readOnly={!enableModifications}
-                fluid
-                label={`Discount percentage (max: ${role.maxDiscountPercent} %)`}
-                value={values.discountPercentage}
-                onChange={(e, { value }) => setValue("discountPercentage", value)}
+                category="Subtotal"
+                conditions={conditions}
+                setCondition={setCondition}
               />
             </Segment>
             <Header as="h2">Summary</Header>
             <Segment.Group raised>
-              <Segment>
-                <Table striped compact celled>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.HeaderCell>Total</Table.HeaderCell>
-                      <Table.HeaderCell>Euro</Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    <Table.Row>
-                      <Table.Cell>One-time-charge (including first year maintenance fee)</Table.Cell>
-                      <Table.Cell> € {summary.onetime_eur.toLocaleString()} </Table.Cell>
-                    </Table.Row>
-                    <Table.Row>
-                      <Table.Cell>Annual fee (= annual maintenance fee)</Table.Cell>
-                      <Table.Cell> € {summary.annual_eur.toLocaleString()} </Table.Cell>
-                    </Table.Row>
-                  </Table.Body>
-                </Table>
-              </Segment>
               <Segment>
                 <Table striped compact celled color="green">
                   <Table.Header>
@@ -259,13 +191,21 @@ const QuotationDetail = (props) => {
                   checked={values.archived}
                   onChange={(e, { checked }) => setValue("archived", checked)}
                 />
-                {values.archived && enableModifications && <Message header="This will make this document read-only." />}
+                {values.archived && enableModifications && (
+                  <Message header="This will make this document read-only." />
+                )}
               </Segment>
             )}
             {enableModifications && (
               <SaveButtons
-                onSave={() => modifyQuotation(state).then((quotation) => router.push(`/quotation/${quotation._id}`))}
-                onReset={() => enableModifications && dispatch({ type: RESET, payload: { ...props, role } })}
+                onSave={() =>
+                  modifyQuotation(state).then((quotation) =>
+                    router.push(`/quotation/${quotation._id}`),
+                  )
+                }
+                onReset={() =>
+                  enableModifications && dispatch({ type: RESET, payload: { ...props, role } })
+                }
               />
             )}
           </Form>
