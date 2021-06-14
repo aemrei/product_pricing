@@ -4,7 +4,7 @@ export async function getExchanges() {
   if (
     !global.exchange ||
     !global.exchange.lastUpdate ||
-    global.exchange.lastUpdate - Date.now() > AN_HOUR
+    Date.now() - global.exchange.lastUpdate > AN_HOUR
   ) {
     console.log("Fetching rates");
 

@@ -126,7 +126,7 @@ const QuotationDetail = (props) => {
             <Segment>
               <SubConditionTable
                 readOnly={!enableModifications}
-                category="Product"
+                categories="Product"
                 conditions={conditions}
                 setCondition={setCondition}
               />
@@ -135,7 +135,7 @@ const QuotationDetail = (props) => {
             <Segment>
               <SubConditionTable
                 readOnly={!enableModifications}
-                category="Interface"
+                categories="Interface"
                 conditions={conditions}
                 setCondition={setCondition}
               />
@@ -144,7 +144,7 @@ const QuotationDetail = (props) => {
             <Segment>
               <SubConditionTable
                 readOnly={!enableModifications}
-                category="Subtotal"
+                categories={["Subtotal", "OtherFee"]}
                 conditions={conditions}
                 setCondition={setCondition}
               />

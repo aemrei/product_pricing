@@ -13,8 +13,8 @@ function getSummary(conditions) {
   }
   return {
     bigmac_onetime_eur: getOverall("Onetime", "EUR"),
-    bigmac_annual_eur: getOverall("Onetime", "USD"),
-    bigmac_onetime_usd: getOverall("Annual", "EUR"),
+    bigmac_annual_eur: getOverall("Annual", "EUR"),
+    bigmac_onetime_usd: getOverall("Onetime", "USD"),
     bigmac_annual_usd: getOverall("Annual", "USD"),
   };
 }

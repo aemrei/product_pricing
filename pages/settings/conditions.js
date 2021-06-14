@@ -20,7 +20,7 @@ const saveConditions = async (conditions) => {
 function StringField({ name, row, updateField, isTechnical, width }) {
   return (
     <Form.Input
-      value={row[name]}
+      value={row[name] || ""}
       style={{ width: width || "10rem" }}
       onChange={(e, { value }) => {
         updateField(row._id, name, value);
@@ -32,7 +32,7 @@ function StringField({ name, row, updateField, isTechnical, width }) {
 function NumericField({ name, row, updateField, isTechnical }) {
   return (
     <Form.Input
-      value={row[name]}
+      value={row[name] || ""}
       style={{ width: isTechnical ? "7rem" : "14rem" }}
       onChange={(e, { value }) => {
         updateField(row._id, name, +value);

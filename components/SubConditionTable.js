@@ -1,8 +1,9 @@
 import { Input, Table } from "semantic-ui-react";
 
-export default function SubConditionTable({ category, conditions, setCondition, readOnly }) {
+export default function SubConditionTable({ categories, conditions, setCondition, readOnly }) {
+  const visibleCategories = [].concat(categories);
   const relatedConditions = conditions
-    .filter((c) => c.category === category && c.order && c.type)
+    .filter((c) => visibleCategories.includes(c.category) && c.order && c.type)
     .sort((a, b) => a.order - b.order);
 
   const rows = [...new Set(relatedConditions.map((rlt) => rlt.name))];
@@ -24,9 +25,14 @@ export default function SubConditionTable({ category, conditions, setCondition, 
             <Table.Cell>{r}</Table.Cell>
             {columns.map((c) => {
               const condition = relatedConditions.find((rlt) => rlt.name === r && rlt.type === c);
+              if (!condition) {
+                return <Table.Cell key={c} />;
+              }
               return (
                 <Table.Cell key={c}>
                   <Input
+                    fluid
+                    label={condition.unit || null}
                     readOnly={readOnly}
                     value={condition.manual}
                     onChange={(e, { value }) => setCondition({ ...condition, manual: value })}
