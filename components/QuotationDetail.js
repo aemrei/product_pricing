@@ -19,6 +19,7 @@ import {
 } from "semantic-ui-react";
 import SaveButtons from "./SaveButtons";
 import SubConditionTable from "./SubConditionTable";
+import ProductCodeTable from "./ProductCodeTable";
 import {
   quotationReducer,
   initiateQuotationState,
@@ -173,6 +174,7 @@ const QuotationDetail = (props) => {
                     </Table.Row>
                   </Table.Body>
                 </Table>
+                <ProductCodeTable conditions={conditions}/>
               </Segment>
             </Segment.Group>
             <Segment>
