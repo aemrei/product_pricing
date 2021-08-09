@@ -77,7 +77,7 @@ export default NextAuth({
       if (
         account.provider === "google" &&
         profile.verified_email === true &&
-        profile.email.endsWith("@fit-global.com")
+        (profile.email.endsWith("@fit-global.com") || profile.email.endsWith("@fitcons.nl"))
       ) {
         return true;
       } else {
