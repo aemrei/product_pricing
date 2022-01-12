@@ -5,7 +5,7 @@ export const getConditionById = async (db, id) => {
 };
 
 export const getConditions = async (db) => {
-  return db.collection("conditions").find().sort({settingsOrder: 1}).toArray();
+  return db.collection("conditions").find({DELETED: {$ne: true}}).sort({settingsOrder: 1}).toArray();
 };
 
 export const updateCondition = async (db, id, updates) => {
@@ -26,5 +26,6 @@ export const updateCondition = async (db, id, updates) => {
 };
 
 export const updateConditions = async (db, conditions) => {
-  return Promise.all(conditions.map(c => db.collection("conditions").findOneAndUpdate({_id: c._id}, {$set: c})))
+  await Promise.all(conditions.map(c => db.collection("conditions").findOneAndUpdate({_id: c._id}, {$set: c}, {upsert: true})))
+  return db.collection("conditions").remove({DELETED: true});
 }

@@ -1,10 +1,11 @@
-import { Container, Form, Header, Icon, Popup, Table } from "semantic-ui-react";
+import { Button, Container, Form, Header, Icon, Popup, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import { connectToDB } from "../../db/connect";
 import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
 import { useState } from "react";
 import simulateConditions from "../../utils/simulateConditions";
+import { nanoid } from "nanoid";
 import { getCountries, getExchanges } from "../../db";
 
 const saveConditions = async (conditions) => {
@@ -27,6 +28,36 @@ function StringField({ name, row, updateField, isTechnical, width }) {
       }}
     />
   );
+}
+
+function createNewCondition() {
+  return {
+    _id: nanoid(12),
+    calcOrder: 0,
+    calculation: "",
+    category: "",
+    errorText: "",
+    isStatistical: true,
+    isTechnical: true,
+    manual: 0,
+    name: "",
+    order: 0,
+    productCode: "",
+    remarks: "",
+    result: 0,
+    settingsOrder: 99990,
+    type: "",
+    unit: "",
+    unitPrice: 0,
+  };
+}
+
+function RemoveConfigLine({ row, handler, isTechnical, width }) {
+  return isTechnical ? (
+    <Button type="button" style={{ width: width || "10rem" }} onClick={() => handler(row._id)}>
+      ❌
+    </Button>
+  ) : null;
 }
 
 function NumericField({ name, row, updateField, isTechnical }) {
@@ -53,7 +84,7 @@ function FieldCheckbox({ name, row, updateField, isTechnical }) {
   );
 }
 
-function ConditionsTable({ conditions, isTechnical, updateField }) {
+function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
   return (
     <Container style={{ overflow: "auto", maxWidth: 1200 }}>
       <Table striped compact celled color="orange">
@@ -74,10 +105,11 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
             {isTechnical && <Table.HeaderCell collapsing>Order</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>SettingsOrder</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>Actions</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {conditions.map((c) => {
+          {conditions.filter(x => !x.DELETED).map((c) => {
             return (
               (isTechnical || !c.isTechnical) && (
                 <Table.Row key={c._id}>
@@ -240,6 +272,11 @@ function ConditionsTable({ conditions, isTechnical, updateField }) {
                       />
                     </Table.Cell>
                   )}
+                  {isTechnical && (
+                    <Table.Cell collapsing>
+                      <RemoveConfigLine row={c} handler={removeLine} isTechnical={isTechnical} width="5rem"/>
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               )
             );
@@ -275,6 +312,15 @@ export default function CategorySettingPage(props) {
     }
   };
 
+  const addLine = () => {
+    const newCondition = createNewCondition();
+    setConditions([...conditions, newCondition]);
+  };
+
+  const removeLine = (id) => {
+    updateField(id, "DELETED", true);
+  };
+
   if (!permissions.displaySettings) {
     return <span>You are not authorized.</span>;
   }
@@ -290,7 +336,13 @@ export default function CategorySettingPage(props) {
         conditions={conditions}
         updateField={updateField}
         isTechnical={isTechnical}
+        removeLine={removeLine}
       />
+      {isTechnical && (
+        <Button type="button" onClick={addLine}>
+          Add line
+        </Button>
+      )}
       {permissions.updateSettings && (
         <SaveButtons
           onReset={() => setConditions(props.conditions)}
