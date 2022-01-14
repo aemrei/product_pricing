@@ -6,7 +6,7 @@ function ConditionParametersTable({ params }) {
   const conditions = params.Conditions || []
   return (
     <Container>
-      {entries.map(([name, value]) => <Label>{name}<Label.Detail>{typeof value === "object" ? "[some object]": value + ""}</Label.Detail></Label>)}
+      {entries.map(([name, value]) => <Label key={name}>{name}<Label.Detail>{typeof value === "object" ? "[some object]": value + ""}</Label.Detail></Label>)}
       <Table striped compact celled color="grey" size="small">
         <Table.Header>
           <Table.Row>
@@ -18,8 +18,8 @@ function ConditionParametersTable({ params }) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {conditions.filter(({result})=>result > 0).map(({category, name, type, result, remarks}) => (
-            <Table.Row>
+          {conditions.filter(({result})=>result > 0).map(({_id, category, name, type, result, remarks}) => (
+            <Table.Row key={_id}>
               <Table.Cell>
                 <pre>{category + ""}</pre>
               </Table.Cell>
