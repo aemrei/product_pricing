@@ -18,11 +18,12 @@ const saveConditions = async (conditions) => {
   });
 };
 
-function StringField({ name, row, updateField, isTechnical, width }) {
+function StringField({ name, row, updateField, isTechnical, placeholder, width }) {
   return (
     <Form.Input
       value={row[name] || ""}
       style={{ width: width || "10rem" }}
+      placeholder={placeholder}
       onChange={(e, { value }) => {
         updateField(row._id, name, value);
       }}
@@ -235,6 +236,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
                     <Table.Cell>
                       <StringField
                         name="calculation"
+                        placeholder={"Possible inputs: " + (c.possibleInputs || '')}
                         row={c}
                         isTechnical={isTechnical}
                         updateField={updateField}
@@ -292,7 +294,11 @@ export default function CategorySettingPage(props) {
   const [isTechnical, setIsTechnical] = useState(false);
   const [conditions, setConditions] = useState(props.conditions);
   const permissions = session?.user?.role?.permissions || {};
+  const [companySize, setCompanySize] = useState("lower");
+  const [companyType, setCompanyType] = useState("simple");
   const [country, setCountry] = useState("eur");
+  const [currency, setCurrency] = useState("eur");
+  const [riskLevel, setRiskLevel] = useState(1);
   const bigMac = props.countries.find((c) => c._id === country);
 
   const updateField = (_id, name, value) => {
@@ -301,16 +307,21 @@ export default function CategorySettingPage(props) {
     const newRow = { ...row, [name]: value };
     const newConditions = [...conditions.slice(0, index), newRow, ...conditions.slice(index + 1)];
     setConditions(newConditions);
-
-    if (isTechnical && typeof value === "number") {
-      setConditions(
-        simulateConditions(newConditions, {
-          dollarRate: props.exchanges.usd.rate,
-          bigMacRatio: bigMac.euro_ratio,
-        }),
-      );
-    }
   };
+
+  const runSimulations = () => {
+    setConditions(
+      simulateConditions(conditions, {
+        dollarRate: props.exchanges.usd.rate,
+        bigMacRatio: bigMac.euro_ratio,
+        companySize: "lower",
+        companyType: "simple",
+        numOfUser: 130,
+        riskLevel: 3,
+        currency: "EUR",
+      }),
+    );
+  }
 
   const addLine = () => {
     const newCondition = createNewCondition();
@@ -345,6 +356,7 @@ export default function CategorySettingPage(props) {
       )}
       {permissions.updateSettings && (
         <SaveButtons
+          onRun={isTechnical && runSimulations}
           onReset={() => setConditions(props.conditions)}
           onSave={() => saveConditions({ conditions })}
         />
@@ -364,6 +376,15 @@ export default function CategorySettingPage(props) {
             placeholder="Select country where the customer is located"
             onChange={(e, { value }) => {
               setCountry(value);
+            }}
+            options={props.countries}
+          />
+          <Form.Select
+            label="Company Type"
+            value={companyType}
+            placeholder="Company type"
+            onChange={(e, { value }) => {
+              setCompanyType(value);
             }}
             options={props.countries}
           />
