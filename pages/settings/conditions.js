@@ -326,7 +326,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
 
 function convertToString(conditions) {
   return JSON.stringify(
-    conditions,
+    conditions.filter(c => !c.DELETED),
     (key, value) => {
       return key === "_input" ? undefined : value;
     },
@@ -346,7 +346,7 @@ export default function CategorySettingPage(props) {
   const [riskLevel, setRiskLevel] = useState(1);
   const bigMac = props.countries.find((c) => c._id === country);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [jsonConditions, setJSONConditions] = useState(convertToString(conditions));
+  const [jsonConditions, setJSONConditions] = useState("");
 
   const updateField = (_id, name, value) => {
     const index = conditions.findIndex((d) => d._id === _id);
@@ -381,7 +381,7 @@ export default function CategorySettingPage(props) {
 
   const editModalReset = () => {
     setEditModalOpen(false);
-    setJSONConditions(convertToString(conditions));
+    setJSONConditions("");
   };
 
   const editModalSave = () => {
@@ -390,7 +390,8 @@ export default function CategorySettingPage(props) {
       if (!Array.isArray(parsed) || !parsed.every(x => typeof x === "object")) {
         throw new Error("Input should be an array of object");
       }
-      setConditions(parsed);
+      const toBeRemoved = conditions.filter(c => !c.DELETED && !parsed.some(p => p._id === c._id)).map(x => ({...x, DELETED: true}));
+      setConditions([...toBeRemoved, ...parsed]);
       setEditModalOpen(false);
     } catch (e) {
       alert("Error while parsing: " + e.message);
@@ -424,6 +425,7 @@ export default function CategorySettingPage(props) {
           onTextMode={
             isTechnical &&
             (() => {
+              setJSONConditions(convertToString(conditions));
               setEditModalOpen(true);
             })
           }

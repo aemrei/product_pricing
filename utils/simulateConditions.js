@@ -9,6 +9,9 @@ export default function simulateConditions(conditions, configs) {
   iterations.forEach((iter) => {
     let lineResult = iterationalResult;
     lineResult.forEach((r, index) => {
+      if (r.DELETED) {
+        return;
+      }
       if (iter === r.calcOrder) {
         let currentResult = 0;
         let errorText = "";
