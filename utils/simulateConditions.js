@@ -12,9 +12,11 @@ export default function simulateConditions(conditions, configs) {
       if (iter === r.calcOrder) {
         let currentResult = 0;
         let errorText = "";
+        const logs = iterationalResult.map(({category, name, type, result, remarks}) => ({category, name, type, result, remarks}));
         const input = {
           ...configs,
           Conditions: iterationalResult,
+          logs,
         };
         try {
           const expression = jsonata(r.calculation);
@@ -30,10 +32,9 @@ export default function simulateConditions(conditions, configs) {
           errorText = e.message;
           console.error(e);
         }
-        const possibleInputs = Object.keys(input).join(", ");
         lineResult = [
           ...lineResult.slice(0, index),
-          { ...r, result: currentResult, errorText: errorText, possibleInputs },
+          { ...r, result: currentResult, errorText: errorText, _input: input },
           ...lineResult.slice(index + 1),
         ];
       }

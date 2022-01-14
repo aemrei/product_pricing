@@ -1,5 +1,6 @@
-import { Button, Container, Form, Header, Icon, Popup, Table } from "semantic-ui-react";
+import { Button, Container, Form, Header, Icon, Modal, Popup, Table } from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
+import ConditionParametersTable from "../../components/ConditionParametersTable"
 import { connectToDB } from "../../db/connect";
 import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
@@ -9,9 +10,10 @@ import { nanoid } from "nanoid";
 import { getCountries, getExchanges } from "../../db";
 
 const saveConditions = async (conditions) => {
+  const {logs, Conditions, ...remaining} = conditions;
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
     method: "PUT",
-    body: JSON.stringify(conditions),
+    body: JSON.stringify(remaining),
     headers: {
       "Content-Type": "application/json",
     },
@@ -85,7 +87,7 @@ function FieldCheckbox({ name, row, updateField, isTechnical }) {
   );
 }
 
-function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
+function ConditionsTable({ conditions, isTechnical, updateField, removeLine, runSimulations }) {
   return (
     <Container style={{ overflow: "auto", maxWidth: 1200 }}>
       <Table striped compact celled color="orange">
@@ -107,6 +109,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
             {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>SettingsOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Actions</Table.HeaderCell>}
+            {<Table.HeaderCell collapsing>Remarks</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -198,7 +201,14 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
                   )}
                   {isTechnical && (
                     <Table.Cell collapsing>
-                      {typeof c.result === "number" ? c.result.toLocaleString() : c.result}
+                      <Modal trigger={<Button onClick={runSimulations}>{typeof c.result === "number" ? c.result.toLocaleString() : c.result}</Button>}>
+                        <Modal.Header>
+                          {c.name} ({c.category}) settingsOrder: {c.settingsOrder}
+                        </Modal.Header>
+                        <Modal.Content>
+                          <ConditionParametersTable params={c._input || {}} />
+                        </Modal.Content>
+                      </Modal>
                     </Table.Cell>
                   )}
                   {isTechnical && (
@@ -279,6 +289,15 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
                       <RemoveConfigLine row={c} handler={removeLine} isTechnical={isTechnical} width="5rem"/>
                     </Table.Cell>
                   )}
+                  <Table.Cell collapsing>
+                    {isTechnical ? <StringField
+                        name="remarks"
+                        row={c}
+                        updateField={updateField}
+                        width="50rem"
+                      /> : <span>{c.remarks}</span> }
+                      
+                  </Table.Cell>
                 </Table.Row>
               )
             );
@@ -348,14 +367,11 @@ export default function CategorySettingPage(props) {
         updateField={updateField}
         isTechnical={isTechnical}
         removeLine={removeLine}
+        runSimulations={runSimulations}
       />
-      {isTechnical && (
-        <Button type="button" onClick={addLine}>
-          Add line
-        </Button>
-      )}
       {permissions.updateSettings && (
         <SaveButtons
+          onAdd={isTechnical && addLine}
           onRun={isTechnical && runSimulations}
           onReset={() => setConditions(props.conditions)}
           onSave={() => saveConditions({ conditions })}
