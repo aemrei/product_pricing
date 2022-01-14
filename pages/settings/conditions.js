@@ -1,4 +1,14 @@
-import { Button, Container, Form, Header, Icon, Modal, Popup, Table, TextArea } from "semantic-ui-react";
+import {
+  Button,
+  Container,
+  Form,
+  Header,
+  Icon,
+  Modal,
+  Popup,
+  Table,
+  TextArea,
+} from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
 import ConditionParametersTable from "../../components/ConditionParametersTable";
 import { connectToDB } from "../../db/connect";
@@ -9,11 +19,11 @@ import simulateConditions from "../../utils/simulateConditions";
 import { nanoid } from "nanoid";
 import { getCountries, getExchanges } from "../../db";
 
-const saveConditions = async (conditions) => {
-  const { _input, ...remaining } = conditions;
+const saveConditions = async ({conditions}) => {
+  const newConditions = conditions.map(({_input, ...originalData})=>originalData);
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
     method: "PUT",
-    body: JSON.stringify(remaining),
+    body: JSON.stringify({conditions: newConditions}),
     headers: {
       "Content-Type": "application/json",
     },
@@ -326,7 +336,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
 
 function convertToString(conditions) {
   return JSON.stringify(
-    conditions.filter(c => !c.DELETED),
+    conditions.filter((c) => !c.DELETED),
     (key, value) => {
       return key === "_input" ? undefined : value;
     },
@@ -357,17 +367,17 @@ export default function CategorySettingPage(props) {
   };
 
   const runSimulations = () => {
-    setConditions(
-      simulateConditions(conditions, {
-        dollarRate: props.exchanges.usd.rate,
-        bigMacRatio: bigMac.euro_ratio,
-        companySize: "lower",
-        companyType: "simple",
-        numOfUser: 130,
-        riskLevel: 3,
-        currency: "EUR",
-      }),
-    );
+    const newConditions = simulateConditions(conditions, {
+      dollarRate: props.exchanges.usd.rate,
+      bigMacRatio: bigMac.euro_ratio,
+      companySize: "lower",
+      companyType: "simple",
+      numOfUser: 130,
+      riskLevel: 3,
+      currency: "EUR",
+    });
+    setConditions(newConditions);
+    return newConditions;
   };
 
   const addLine = () => {
@@ -387,10 +397,12 @@ export default function CategorySettingPage(props) {
   const editModalSave = () => {
     try {
       const parsed = JSON.parse(jsonConditions);
-      if (!Array.isArray(parsed) || !parsed.every(x => typeof x === "object")) {
+      if (!Array.isArray(parsed) || !parsed.every((x) => typeof x === "object")) {
         throw new Error("Input should be an array of object");
       }
-      const toBeRemoved = conditions.filter(c => !c.DELETED && !parsed.some(p => p._id === c._id)).map(x => ({...x, DELETED: true}));
+      const toBeRemoved = conditions
+        .filter((c) => !c.DELETED && !parsed.some((p) => p._id === c._id))
+        .map((x) => ({ ...x, DELETED: true }));
       setConditions([...toBeRemoved, ...parsed]);
       setEditModalOpen(false);
     } catch (e) {
@@ -421,7 +433,10 @@ export default function CategorySettingPage(props) {
           onAdd={isTechnical && addLine}
           onRun={isTechnical && runSimulations}
           onReset={() => setConditions(props.conditions)}
-          onSave={() => saveConditions({ conditions })}
+          onSave={() => {
+            const newConditions = runSimulations();
+            saveConditions({ conditions: newConditions });
+          }}
           onTextMode={
             isTechnical &&
             (() => {
@@ -464,7 +479,13 @@ export default function CategorySettingPage(props) {
       <Modal open={editModalOpen}>
         <Modal.Header>Conditions</Modal.Header>
         <Modal.Content>
-          <TextArea value={jsonConditions} style={{ minHeight: "50vh", width: "100%" }} onChange={(e, {value})=>{setJSONConditions(value)}}/>
+          <TextArea
+            value={jsonConditions}
+            style={{ minHeight: "50vh", width: "100%" }}
+            onChange={(e, { value }) => {
+              setJSONConditions(value);
+            }}
+          />
         </Modal.Content>
         <SaveButtons onSave={editModalSave} onReset={editModalReset} />
       </Modal>

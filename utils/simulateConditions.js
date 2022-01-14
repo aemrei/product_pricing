@@ -1,9 +1,8 @@
 import jsonata from "jsonata";
 
 export default function simulateConditions(conditions, configs) {
-  const initialData = conditions.map((c) => ({ ...c, result: 0 }));
-  const iterations = [...new Set(initialData.map((d) => d.calcOrder))].sort();
-  let iterationalResult = initialData;
+  let iterationalResult = conditions.map((c) => ({ ...c, result: 0, errorText: "" }));
+  const iterations = [...new Set(iterationalResult.map((d) => d.calcOrder))].sort();
   debugger;
 
   iterations.forEach((iter) => {
