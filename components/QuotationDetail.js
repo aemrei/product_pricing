@@ -1,4 +1,4 @@
-import { useReducer, useRef } from "react";
+import { Fragment, useReducer, useRef } from "react";
 import { useRouter } from "next/router";
 import {
   Container,
@@ -45,6 +45,20 @@ const modifyQuotation = async (state) => {
   return data;
 };
 
+function getSections(conditions) {
+  const sections = [];
+  conditions.forEach((c) => {
+    const sectionName = c?.uiConfigResult?.section || "Others";
+    let section = sections.find((s) => s.name === sectionName);
+    if (!section) {
+      section = { name: sectionName, items: [] };
+      sections.push(section);
+    }
+    section.items.push(c);
+  });
+  return sections;
+}
+
 const QuotationDetail = (props) => {
   const [session, loading] = useSession();
   const role = session?.user?.role || {};
@@ -61,6 +75,7 @@ const QuotationDetail = (props) => {
   const contextRef = useRef(null);
   const router = useRouter();
   const permissions = role.permissions || {};
+  const sections = getSections(conditions.filter((c) => c.category === "UI"));
   const enableModifications = state._id
     ? permissions.updateItem && !props.values.archived
     : permissions.createItem;
@@ -89,7 +104,7 @@ const QuotationDetail = (props) => {
       <Grid columns={2}>
         <Grid.Column width={11}>
           <Form>
-            <Header as="h2">Customer Details</Header>
+            <Header as="h2">Customer Info</Header>
             <Segment>
               <Grid>
                 <Grid.Column width={4}>
@@ -124,10 +139,33 @@ const QuotationDetail = (props) => {
                 </Grid.Column>
               </Grid>
             </Segment>
-            <Header as="h2">Conditions</Header>
-            <Segment>
-              {conditions.map(c => <SmartField key={c._id} condition={c} setCondition={setCondition} readOnly={false} />)}
-            </Segment>
+            {sections.map((s) => (
+              <Fragment key={s.name}>
+                <Header as="h2">{s.name}</Header>
+                <Table striped compact celled color="orange">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Name</Table.HeaderCell>
+                      <Table.HeaderCell></Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {s.items.map((c) => (
+                      <Table.Row key={c._id}>
+                        <Table.Cell>{c.remarks}</Table.Cell>
+                        <Table.Cell>
+                          <SmartField
+                            condition={c}
+                            setCondition={setCondition}
+                            readOnly={!enableModifications}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </Fragment>
+            ))}
             <Header as="h2">Fit-EM Modules</Header>
             <Segment>
               <SubConditionTable
@@ -179,7 +217,7 @@ const QuotationDetail = (props) => {
                     </Table.Row>
                   </Table.Body>
                 </Table>
-                <ProductCodeTable conditions={conditions}/>
+                <ProductCodeTable conditions={conditions} />
               </Segment>
             </Segment.Group>
             <Segment>

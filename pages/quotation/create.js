@@ -25,5 +25,7 @@ export async function getServerSideProps() {
   const settings = await getSettings(db);
   const exchanges = await getExchanges(db);
 
+  conditions.sort((x, y) => x.order - y.order);
+
   return { props: { conditions, countries, ranges, settings, exchanges } };
 }

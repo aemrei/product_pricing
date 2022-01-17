@@ -1,14 +1,14 @@
 import React from "react";
 import { Form } from "semantic-ui-react";
 
-function DropdownField({ condition, setCondition, readOnly }) {
+function DropdownField({ condition, setCondition, readOnly, withLabel = undefined }) {
   const { remarks, uiConfigResult } = condition;
-  const options = uiConfigResult?.items?.map(i => ({...i, value: +i.key})) || [];
+  const options = uiConfigResult?.items?.map((i) => ({ ...i, value: +i.key })) || [];
   return (
     <Form.Dropdown
       readOnly={readOnly}
       button
-      label={remarks}
+      label={withLabel && remarks}
       options={options}
       value={condition.manual || 0}
       onChange={(e, { value }) => setCondition({ ...condition, manual: value })}
@@ -17,27 +17,27 @@ function DropdownField({ condition, setCondition, readOnly }) {
   );
 }
 
-function NumericField({ condition, setCondition, readOnly }) {
+function NumericField({ condition, setCondition, readOnly, withLabel = undefined }) {
   const { remarks } = condition;
   return (
     <Form.Input
       readOnly={readOnly}
       fluid
-      label={remarks}
+      label={withLabel && remarks}
       value={condition.manual || ""}
       onChange={(e, { value }) => setCondition({ ...condition, manual: value })}
     />
   );
 }
 
-function SwitchField({ condition, setCondition, readOnly }) {
+function SwitchField({ condition, setCondition, readOnly, withLabel = undefined }) {
   const { remarks, manual } = condition;
   return (
     <Form.Checkbox
       toggle
       readOnly={readOnly}
       checked={!!manual}
-      label={remarks}
+      label={withLabel && remarks}
       onChange={(e, { checked }) => setCondition({ ...condition, manual: +checked })}
     />
   );
