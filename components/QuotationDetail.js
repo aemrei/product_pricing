@@ -29,6 +29,7 @@ import {
 } from "../utils/quotationReducer";
 import { getLogoURL } from "../utils/media";
 import { useSession } from "next-auth/client";
+import SmartField from "./SmartField";
 
 const modifyQuotation = async (state) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/`, {
@@ -122,6 +123,10 @@ const QuotationDetail = (props) => {
                   />
                 </Grid.Column>
               </Grid>
+            </Segment>
+            <Header as="h2">Conditions</Header>
+            <Segment>
+              {conditions.map(c => <SmartField key={c._id} condition={c} setCondition={setCondition} readOnly={false} />)}
             </Segment>
             <Header as="h2">Fit-EM Modules</Header>
             <Segment>
