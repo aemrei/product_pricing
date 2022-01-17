@@ -3,7 +3,6 @@ import jsonata from "jsonata";
 export default function simulateConditions(conditions, configs) {
   let iterationalResult = conditions.map((c) => ({ ...c, result: 0, errorText: "" }));
   const iterations = [...new Set(iterationalResult.map((d) => d.calcOrder))].sort();
-  debugger;
 
   iterations.forEach((iter) => {
     let lineResult = iterationalResult;
@@ -13,11 +12,13 @@ export default function simulateConditions(conditions, configs) {
       }
       if (iter === r.calcOrder) {
         let currentResult = 0;
+        let uiConfigResult = {};
         let errorText = "";
         const logs = iterationalResult.map(({category, name, type, result, remarks}) => ({category, name, type, result, remarks}));
         const input = {
           ...configs,
           Conditions: iterationalResult,
+          C: iterationalResult,
           logs,
         };
         try {
@@ -34,9 +35,19 @@ export default function simulateConditions(conditions, configs) {
           errorText = e.message;
           console.error(e);
         }
+        if (r.uiConfig) {
+          try {
+            const expression = jsonata(r.uiConfig);
+            uiConfigResult = expression.evaluate(input, r);
+          } catch (e) {
+            errorText += "\nUIConfigError: " + e.message;
+            console.error(e);
+          }
+        }
+
         lineResult = [
           ...lineResult.slice(0, index),
-          { ...r, result: currentResult, errorText: errorText, _input: input },
+          { ...r, result: currentResult, uiConfigResult, errorText: errorText, _input: input },
           ...lineResult.slice(index + 1),
         ];
       }

@@ -120,6 +120,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
             {isTechnical && <Table.HeaderCell collapsing>SettingsOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Actions</Table.HeaderCell>}
             {<Table.HeaderCell collapsing>Remarks</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>UI Config</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -264,7 +265,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
                       <Table.Cell>
                         <StringField
                           name="calculation"
-                          placeholder={"Possible inputs: " + (c.possibleInputs || "")}
+                          placeholder={""}
                           row={c}
                           isTechnical={isTechnical}
                           updateField={updateField}
@@ -324,6 +325,18 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
                         <span>{c.remarks}</span>
                       )}
                     </Table.Cell>
+                    {isTechnical && (
+                      <Table.Cell>
+                        <StringField
+                          name="uiConfig"
+                          placeholder={""}
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                          width="50rem"
+                        />
+                      </Table.Cell>
+                    )}
                   </Table.Row>
                 )
               );
