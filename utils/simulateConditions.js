@@ -1,8 +1,11 @@
 import jsonata from "jsonata";
 
+const AUTO_PARAM_REGEX = /^[a-z]+[a-zA-Z0-9]+$/;
+
 export default function simulateConditions(conditions, configs) {
   let iterationalResult = conditions.map((c) => ({ ...c, result: 0, errorText: "" }));
   const iterations = [...new Set(iterationalResult.map((d) => d.calcOrder))].sort();
+  let autoParams = {};
 
   iterations.forEach((iter) => {
     let lineResult = iterationalResult;
@@ -17,6 +20,7 @@ export default function simulateConditions(conditions, configs) {
         const logs = iterationalResult.map(({category, name, type, result, remarks}) => ({category, name, type, result, remarks}));
         const input = {
           ...configs,
+          ...autoParams,
           Conditions: iterationalResult,
           C: iterationalResult,
           logs,
@@ -28,7 +32,7 @@ export default function simulateConditions(conditions, configs) {
             r,
           );
           if (typeof currentResult !== "number") {
-            console.log({ row: r, configs, iterationalResult });
+            console.log({ row: r, configs, autoParams, iterationalResult });
             throw new Error("Not numeric: " + currentResult);
           }
         } catch (e) {
@@ -43,6 +47,9 @@ export default function simulateConditions(conditions, configs) {
             errorText += "\nUIConfigError: " + e.message;
             console.error(e);
           }
+        }
+        if (AUTO_PARAM_REGEX.test(r.name)) {
+          autoParams = {...autoParams, [r.name]: currentResult};
         }
 
         lineResult = [

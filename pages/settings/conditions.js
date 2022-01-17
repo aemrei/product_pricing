@@ -383,11 +383,6 @@ export default function CategorySettingPage(props) {
     const newConditions = simulateConditions(conditions, {
       dollarRate: props.exchanges.usd.rate,
       bigMacRatio: bigMac.euro_ratio,
-      companySize: "lower",
-      companyType: "simple",
-      numOfUser: 130,
-      riskLevel: 3,
-      currency: "EUR",
     });
     setConditions(newConditions);
     return newConditions;
