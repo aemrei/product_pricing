@@ -1,5 +1,16 @@
-import { Button, Container, Form, Header, Icon, Popup, Table } from "semantic-ui-react";
+import {
+  Button,
+  Container,
+  Form,
+  Header,
+  Icon,
+  Modal,
+  Popup,
+  Table,
+  TextArea,
+} from "semantic-ui-react";
 import SaveButtons from "../../components/SaveButtons";
+import ConditionParametersTable from "../../components/ConditionParametersTable";
 import { connectToDB } from "../../db/connect";
 import { getConditions } from "../../db/conditions";
 import { getSession, useSession } from "next-auth/client";
@@ -8,21 +19,23 @@ import simulateConditions from "../../utils/simulateConditions";
 import { nanoid } from "nanoid";
 import { getCountries, getExchanges } from "../../db";
 
-const saveConditions = async (conditions) => {
+const saveConditions = async ({conditions}) => {
+  const newConditions = conditions.map(({_input, ...originalData})=>originalData);
   await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/conditions`, {
     method: "PUT",
-    body: JSON.stringify(conditions),
+    body: JSON.stringify({conditions: newConditions}),
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
 
-function StringField({ name, row, updateField, isTechnical, width }) {
+function StringField({ name, row, updateField, isTechnical, placeholder, width }) {
   return (
     <Form.Input
       value={row[name] || ""}
       style={{ width: width || "10rem" }}
+      placeholder={placeholder}
       onChange={(e, { value }) => {
         updateField(row._id, name, value);
       }}
@@ -84,7 +97,7 @@ function FieldCheckbox({ name, row, updateField, isTechnical }) {
   );
 }
 
-function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
+function ConditionsTable({ conditions, isTechnical, updateField, removeLine, runSimulations }) {
   return (
     <Container style={{ overflow: "auto", maxWidth: 1200 }}>
       <Table striped compact celled color="orange">
@@ -106,184 +119,237 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine }) {
             {isTechnical && <Table.HeaderCell collapsing>CalcOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>SettingsOrder</Table.HeaderCell>}
             {isTechnical && <Table.HeaderCell collapsing>Actions</Table.HeaderCell>}
+            {<Table.HeaderCell collapsing>Remarks</Table.HeaderCell>}
+            {isTechnical && <Table.HeaderCell collapsing>UI Config</Table.HeaderCell>}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {conditions.filter(x => !x.DELETED).map((c) => {
-            return (
-              (isTechnical || !c.isTechnical) && (
-                <Table.Row key={c._id}>
-                  <Table.Cell collapsing>
-                    {isTechnical ? (
-                      <StringField
-                        name="productCode"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    ) : (
-                      <span>{c.productCode}</span>
-                    )}
-                  </Table.Cell>
-                  {isTechnical && (
+          {conditions
+            .filter((x) => !x.DELETED)
+            .map((c) => {
+              return (
+                (isTechnical || !c.isTechnical) && (
+                  <Table.Row key={c._id}>
                     <Table.Cell collapsing>
                       {isTechnical ? (
                         <StringField
-                          name="category"
+                          name="productCode"
                           row={c}
                           isTechnical={isTechnical}
                           updateField={updateField}
                         />
                       ) : (
-                        <span>{c.category}</span>
+                        <span>{c.productCode}</span>
                       )}
                     </Table.Cell>
-                  )}
-                  <Table.Cell collapsing>
-                    {isTechnical ? (
-                      <StringField
-                        name="name"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    ) : (
-                      <span>{c.name}</span>
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        {isTechnical ? (
+                          <StringField
+                            name="category"
+                            row={c}
+                            isTechnical={isTechnical}
+                            updateField={updateField}
+                          />
+                        ) : (
+                          <span>{c.category}</span>
+                        )}
+                      </Table.Cell>
                     )}
-                  </Table.Cell>
-                  <Table.Cell collapsing>
-                    {isTechnical ? (
-                      <StringField
-                        name="type"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    ) : (
-                      <span>{c.type}</span>
-                    )}
-                  </Table.Cell>
-                  <Table.Cell collapsing>
-                    <NumericField
-                      name="unitPrice"
-                      row={c}
-                      isTechnical={isTechnical}
-                      updateField={updateField}
-                    />
-                  </Table.Cell>
-                  {isTechnical && (
                     <Table.Cell collapsing>
-                      <StringField
-                        name="unit"
+                      {isTechnical ? (
+                        <StringField
+                          name="name"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      ) : (
+                        <span>{c.name}</span>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell collapsing>
+                      {isTechnical ? (
+                        <StringField
+                          name="type"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      ) : (
+                        <span>{c.type}</span>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell collapsing>
+                      <NumericField
+                        name="unitPrice"
                         row={c}
                         isTechnical={isTechnical}
                         updateField={updateField}
                       />
                     </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      {c.isStatistical ? (
-                        <span>{c.manual}</span>
-                      ) : (
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <StringField
+                          name="unit"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
                         <NumericField
                           name="manual"
                           row={c}
                           isTechnical={isTechnical}
                           updateField={updateField}
                         />
-                      )}
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      {typeof c.result === "number" ? c.result.toLocaleString() : c.result}
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <FieldCheckbox
-                        name="isStatistical"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <FieldCheckbox
-                        name="isTechnical"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      {c.errorText && (
-                        <Popup
-                          trigger={<Icon circular name="exclamation circle" />}
-                          content={c.errorText}
-                          inverted
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <Modal
+                          trigger={
+                            <Button onClick={runSimulations}>
+                              {typeof c.result === "number" ? c.result.toLocaleString() : c.result}
+                            </Button>
+                          }
+                        >
+                          <Modal.Header>
+                            {c.name} ({c.category}) settingsOrder: {c.settingsOrder}
+                          </Modal.Header>
+                          <Modal.Content>
+                            <ConditionParametersTable params={c._input || {}} />
+                          </Modal.Content>
+                        </Modal>
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <FieldCheckbox
+                          name="isStatistical"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
                         />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <FieldCheckbox
+                          name="isTechnical"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        {c.errorText && (
+                          <Popup
+                            trigger={<Icon circular name="exclamation circle" />}
+                            content={c.errorText}
+                            inverted
+                          />
+                        )}
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell>
+                        <StringField
+                          name="calculation"
+                          placeholder={""}
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                          width="50rem"
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <NumericField
+                          name="order"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <NumericField
+                          name="calcOrder"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <NumericField
+                          name="settingsOrder"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
+                      </Table.Cell>
+                    )}
+                    {isTechnical && (
+                      <Table.Cell collapsing>
+                        <RemoveConfigLine
+                          row={c}
+                          handler={removeLine}
+                          isTechnical={isTechnical}
+                          width="5rem"
+                        />
+                      </Table.Cell>
+                    )}
+                    <Table.Cell collapsing>
+                      {isTechnical ? (
+                        <StringField
+                          name="remarks"
+                          row={c}
+                          updateField={updateField}
+                          width="10rem"
+                        />
+                      ) : (
+                        <span>{c.remarks}</span>
                       )}
                     </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell>
-                      <StringField
-                        name="calculation"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                        width="50rem"
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <NumericField
-                        name="order"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <NumericField
-                        name="calcOrder"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <NumericField
-                        name="settingsOrder"
-                        row={c}
-                        isTechnical={isTechnical}
-                        updateField={updateField}
-                      />
-                    </Table.Cell>
-                  )}
-                  {isTechnical && (
-                    <Table.Cell collapsing>
-                      <RemoveConfigLine row={c} handler={removeLine} isTechnical={isTechnical} width="5rem"/>
-                    </Table.Cell>
-                  )}
-                </Table.Row>
-              )
-            );
-          })}
+                    {isTechnical && (
+                      <Table.Cell>
+                        <StringField
+                          name="uiConfig"
+                          placeholder={""}
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                          width="50rem"
+                        />
+                      </Table.Cell>
+                    )}
+                  </Table.Row>
+                )
+              );
+            })}
         </Table.Body>
       </Table>
     </Container>
+  );
+}
+
+function convertConditionsToJSON(conditions) {
+  return JSON.stringify(
+    conditions.filter((c) => !c.DELETED),
+    (key, value) => {
+      return key === "_input" ? undefined : value;
+    },
+    2,
   );
 }
 
@@ -292,8 +358,14 @@ export default function CategorySettingPage(props) {
   const [isTechnical, setIsTechnical] = useState(false);
   const [conditions, setConditions] = useState(props.conditions);
   const permissions = session?.user?.role?.permissions || {};
+  const [companySize, setCompanySize] = useState("lower");
+  const [companyType, setCompanyType] = useState("simple");
   const [country, setCountry] = useState("eur");
+  const [currency, setCurrency] = useState("eur");
+  const [riskLevel, setRiskLevel] = useState(1);
   const bigMac = props.countries.find((c) => c._id === country);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [jsonConditions, setJSONConditions] = useState("");
 
   const updateField = (_id, name, value) => {
     const index = conditions.findIndex((d) => d._id === _id);
@@ -301,15 +373,15 @@ export default function CategorySettingPage(props) {
     const newRow = { ...row, [name]: value };
     const newConditions = [...conditions.slice(0, index), newRow, ...conditions.slice(index + 1)];
     setConditions(newConditions);
+  };
 
-    if (isTechnical && typeof value === "number") {
-      setConditions(
-        simulateConditions(newConditions, {
-          dollarRate: props.exchanges.usd.rate,
-          bigMacRatio: bigMac.euro_ratio,
-        }),
-      );
-    }
+  const runSimulations = () => {
+    const newConditions = simulateConditions(conditions, {
+      dollarRate: props.exchanges.usd.rate,
+      bigMacRatio: bigMac.euro_ratio,
+    });
+    setConditions(newConditions);
+    return newConditions;
   };
 
   const addLine = () => {
@@ -319,6 +391,27 @@ export default function CategorySettingPage(props) {
 
   const removeLine = (id) => {
     updateField(id, "DELETED", true);
+  };
+
+  const editModalReset = () => {
+    setEditModalOpen(false);
+    setJSONConditions("");
+  };
+
+  const editModalSave = () => {
+    try {
+      const parsed = JSON.parse(jsonConditions);
+      if (!Array.isArray(parsed) || !parsed.every((x) => typeof x === "object")) {
+        throw new Error("Input should be an array of object");
+      }
+      const toBeRemoved = conditions
+        .filter((c) => !c.DELETED && !parsed.some((p) => p._id === c._id))
+        .map((x) => ({ ...x, DELETED: true }));
+      setConditions([...toBeRemoved, ...parsed]);
+      setEditModalOpen(false);
+    } catch (e) {
+      alert("Error while parsing: " + e.message);
+    }
   };
 
   if (!permissions.displaySettings) {
@@ -337,16 +430,24 @@ export default function CategorySettingPage(props) {
         updateField={updateField}
         isTechnical={isTechnical}
         removeLine={removeLine}
+        runSimulations={runSimulations}
       />
-      {isTechnical && (
-        <Button type="button" onClick={addLine}>
-          Add line
-        </Button>
-      )}
       {permissions.updateSettings && (
         <SaveButtons
+          onAdd={isTechnical && addLine}
+          onRun={isTechnical && runSimulations}
           onReset={() => setConditions(props.conditions)}
-          onSave={() => saveConditions({ conditions })}
+          onSave={() => {
+            const newConditions = runSimulations();
+            saveConditions({ conditions: newConditions });
+          }}
+          onTextMode={
+            isTechnical &&
+            (() => {
+              setJSONConditions(convertConditionsToJSON(conditions));
+              setEditModalOpen(true);
+            })
+          }
         />
       )}
       {session?.user?.technical && (
@@ -367,9 +468,31 @@ export default function CategorySettingPage(props) {
             }}
             options={props.countries}
           />
+          <Form.Select
+            label="Company Type"
+            value={companyType}
+            placeholder="Company type"
+            onChange={(e, { value }) => {
+              setCompanyType(value);
+            }}
+            options={props.countries}
+          />
           <span>BigMac Ratio: {bigMac.euro_ratio.toFixed(2)}</span>
         </div>
       )}
+      <Modal open={editModalOpen}>
+        <Modal.Header>Conditions</Modal.Header>
+        <Modal.Content>
+          <TextArea
+            value={jsonConditions}
+            style={{ minHeight: "50vh", width: "100%" }}
+            onChange={(e, { value }) => {
+              setJSONConditions(value);
+            }}
+          />
+        </Modal.Content>
+        <SaveButtons onSave={editModalSave} onReset={editModalReset} />
+      </Modal>
     </Container>
   );
 }

@@ -1,0 +1,69 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('pricing');
+
+var data = [
+  {"text": "Argentina",	"dollar_ratio": 0.698162764, "euro_ratio":	0.785375987 },
+  {"text": "Australia",	"dollar_ratio": 0.848311947, "euro_ratio":	0.954281533 },
+  {"text": "Azerbaijan",	"dollar_ratio": 0.411486194, "euro_ratio":	0.462888302 },
+  {"text": "Bahrain",	"dollar_ratio": 0.704208821, "euro_ratio":	0.792177307 },
+  {"text": "Brazil",	"dollar_ratio": 0.772217112, "euro_ratio":	0.86868107 },
+  {"text": "Britain",	"dollar_ratio": 0.84078115, "euro_ratio":	0.945810003 },
+  {"text": "Canada",	"dollar_ratio": 0.940452153, "euro_ratio":	1.057931727 },
+  {"text": "Chile",	"dollar_ratio": 0.696976155, "euro_ratio":	0.784041149 },
+  {"text": "China",	"dollar_ratio": 0.611849587, "euro_ratio":	0.688280725 },
+  {"text": "Colombia",	"dollar_ratio": 0.596556423, "euro_ratio":	0.671077167 },
+  {"text": "Costa Rica",	"dollar_ratio": 0.67903815, "euro_ratio":	0.763862361 },
+  {"text": "Croatia",	"dollar_ratio": 0.663919102, "euro_ratio":	0.746854669 },
+  {"text": "Czech Republic",	"dollar_ratio": 0.722557006, "euro_ratio":	0.812817513 },
+  {"text": "Denmark",	"dollar_ratio": 0.83962974, "euro_ratio":	0.944514761 },
+  {"text": "Egypt",	"dollar_ratio": 0.480033433, "euro_ratio":	0.539998337 },
+  {"text": "Euro area",	"dollar_ratio": 0.88895354, "euro_ratio":	1 },
+  {"text": "Guatemala",	"dollar_ratio": 0.594175435, "euro_ratio":	0.668398751 },
+  {"text": "Honduras",	"dollar_ratio": 0.648510364, "euro_ratio":	0.7295211 },
+  {"text": "Hong Kong",	"dollar_ratio": 0.478175991, "euro_ratio":	0.537908866 },
+  {"text": "Hungary",	"dollar_ratio": 0.521166744, "euro_ratio":	0.586269946 },
+  {"text": "India",	"dollar_ratio": 0.450691129, "euro_ratio":	0.506990645 },
+  {"text": "Indonesia",	"dollar_ratio": 0.414513457, "euro_ratio":	0.466293725 },
+  {"text": "Israel",	"dollar_ratio": 0.913974441, "euro_ratio":	1.028146466 },
+  {"text": "Japan",	"dollar_ratio": 0.627885102, "euro_ratio":	0.706319367 },
+  {"text": "Jordan",	"dollar_ratio": 0.531722356, "euro_ratio":	0.598144146 },
+  {"text": "Kuwait",	"dollar_ratio": 0.735501789, "euro_ratio":	0.827379335 },
+  {"text": "Lebanon",	"dollar_ratio": 0.297666935, "euro_ratio":	0.334850947 },
+  {"text": "Malaysia",	"dollar_ratio": 0.418544583, "euro_ratio":	0.470828412 },
+  {"text": "Mexico",	"dollar_ratio": 0.56256732, "euro_ratio":	0.632842207 },
+  {"text": "Moldova",	"dollar_ratio": 0.51187652, "euro_ratio":	0.575819204 },
+  {"text": "New Zealand",	"dollar_ratio": 0.842960177, "euro_ratio":	0.94826123 },
+  {"text": "Nicaragua",	"dollar_ratio": 0.643489014, "euro_ratio":	0.723872491 },
+  {"text": "Norway",	"dollar_ratio": 1.11544111, "euro_ratio":	1.254779986 },
+  {"text": "Oman",	"dollar_ratio": 0.528606215, "euro_ratio":	0.594638742 },
+  {"text": "Pakistan",	"dollar_ratio": 0.637212087, "euro_ratio":	0.716811463 },
+  {"text": "Peru",	"dollar_ratio": 0.577860809, "euro_ratio":	0.65004613 },
+  {"text": "Philippines",	"dollar_ratio": 0.499160742, "euro_ratio":	0.561514995 },
+  {"text": "Poland",	"dollar_ratio": 0.608416282, "euro_ratio":	0.684418538 },
+  {"text": "Qatar",	"dollar_ratio": 0.631937642, "euro_ratio":	0.710878144 },
+  {"text": "Romania",	"dollar_ratio": 0.448003963, "euro_ratio":	0.503967803 },
+  {"text": "Russia",	"dollar_ratio": 0.401335092, "euro_ratio":	0.451469142 },
+  {"text": "Saudi Arabia",	"dollar_ratio": 0.660643642, "euro_ratio":	0.743170044 },
+  {"text": "Singapore",	"dollar_ratio": 0.763199552, "euro_ratio":	0.858537053 },
+  {"text": "South Africa",	"dollar_ratio": 0.404378758, "euro_ratio":	0.454893017 },
+  {"text": "South Korea",	"dollar_ratio": 0.7077492, "euro_ratio":	0.796159943 },
+  {"text": "Sri Lanka",	"dollar_ratio": 0.62102158, "euro_ratio":	0.698598467 },
+  {"text": "Sweden",	"dollar_ratio": 1.096486219, "euro_ratio":	1.233457284 },
+  {"text": "Switzerland",	"dollar_ratio": 1.246754243, "euro_ratio":	1.402496517 },
+  {"text": "Taiwan",	"dollar_ratio": 0.45434933, "euro_ratio":	0.511105822 },
+  {"text": "Thailand",	"dollar_ratio": 0.690486658, "euro_ratio":	0.776740996 },
+  {"text": "Turkey",	"dollar_ratio": 0.413456788, "euro_ratio":	0.465105058 },
+  {"text": "Ukraine",	"dollar_ratio": 0.422646024, "euro_ratio":	0.475442197 },
+  {"text": "United Arab Emirates",	"dollar_ratio": 0.710730427, "euro_ratio":	0.79951358 },
+  {"text": "United States",	"dollar_ratio": 1, "euro_ratio":	1.124918182 },
+  {"text": "Uruguay",	"dollar_ratio": 0.905068383, "euro_ratio":	1.01812788 },
+  {"text": "Venezuela",	"dollar_ratio": 1.477253709, "euro_ratio":	1.661789557 },
+  {"text": "Vietnam",	"dollar_ratio": 0.53031632, "euro_ratio":	0.596562471 }
+];
+
+data.forEach(d => db.countries.updateOne({text: d.text}, {$set:{dollar_ratio: d.dollar_ratio, euro_ratio: d.euro_ratio}}))

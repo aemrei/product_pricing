@@ -1,21 +1,32 @@
 import { CATEGORY_PRODUCT } from "../db/settings";
-import simulateConditions from "./simulateConditions";
+import simulateConditions, { AUTO_PARAM_REGEX } from "./simulateConditions";
 
 export const SET_CONDITION = "SET_CONDITION";
 export const SET_PROPERTY = "SET_PROPERTY";
 export const RESET = "RESET";
 
 function getSummary(conditions) {
-  function getOverall(name, type) {
+  function getOverall(category, name, type) {
     return Math.round(
-      conditions.find((c) => c.category === "Overall" && c.name === name && c.type === type).result,
+      conditions.find((c) => c.category === category && c.name === name && c.type === type)?.result,
     );
   }
+  const autoVariables = conditions
+    .filter((x) => AUTO_PARAM_REGEX.test(x.name))
+    .reduce(
+      (acc, x) => ({ ...acc, [x.name]: { result: x.result, uiConfigResult: x.uiConfigResult } }),
+      {},
+    );
   return {
-    bigmac_onetime_eur: getOverall("Onetime", "EUR"),
-    bigmac_annual_eur: getOverall("Annual", "EUR"),
-    bigmac_onetime_usd: getOverall("Onetime", "USD"),
-    bigmac_annual_usd: getOverall("Annual", "USD"),
+    ...autoVariables,
+    subtotal_onetime_conv: getOverall("Subtotal", "Onetime", "CONVERTED"),
+    subtotal_annual_conv: getOverall("Subtotal", "Annual", "CONVERTED"),
+    bigmac_onetime_eur: getOverall("Overall", "Onetime", "EUR"),
+    bigmac_annual_eur: getOverall("Overall", "Annual", "EUR"),
+    bigmac_onetime_usd: getOverall("Overall", "Onetime", "USD"),
+    bigmac_annual_usd: getOverall("Overall", "Annual", "USD"),
+    bigmac_onetime_conv: getOverall("Overall", "Onetime", "CONVERTED"),
+    bigmac_annual_conv: getOverall("Overall", "Annual", "CONVERTED"),
   };
 }
 
@@ -43,7 +54,7 @@ export const quotationReducer = (state, action) => {
       let manual = +payload.manual || 0;
       const selectedCondition = updatedState.conditions[selectedConditionIndex];
 
-      if (selectedCondition.name === "Discount") {
+      if (selectedCondition.name.match(/discount/gi)) {
         const maxDiscountPercent = +role.maxDiscountPercent || 0;
         manual = Math.max(0, Math.min(maxDiscountPercent, manual));
       }
