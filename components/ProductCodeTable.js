@@ -1,7 +1,7 @@
-import { Table } from "semantic-ui-react";
+import { Icon, Table } from "semantic-ui-react";
 
-export default function ProductCodeTable({ conditions }) {
-  const visibleConditions = conditions.filter((c) => c.productCode && c.type === "Subtotal");
+export default function ProductCodeTable({ conditions, icon }) {
+  const visibleConditions = conditions.filter((c) => c.productCode && c.type === "Subtotal" && c.result > 0);
 
   return (
     <Table striped compact celled color="olive">
@@ -17,7 +17,7 @@ export default function ProductCodeTable({ conditions }) {
           <Table.Row key={c._id}>
             <Table.Cell>{c.productCode}</Table.Cell>
             <Table.Cell>{c.name}</Table.Cell>
-            <Table.Cell>€ {Math.round(c.result).toLocaleString()}</Table.Cell>
+            <Table.Cell><Icon name={icon} />{" "}{Math.round(c.result).toLocaleString()}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

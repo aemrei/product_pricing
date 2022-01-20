@@ -30,10 +30,16 @@ import { getLogoURL } from "../utils/media";
 import { useSession } from "next-auth/client";
 import SmartField from "./SmartField";
 
+function convertConditionsToJSON(obj) {
+  return JSON.stringify(obj, (key, value) => {
+    return key === "_input" ? undefined : value;
+  });
+}
+
 const modifyQuotation = async (state) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/quotation/`, {
     method: state._id ? "PUT" : "POST",
-    body: JSON.stringify(state),
+    body: convertConditionsToJSON(state),
     headers: {
       "Content-Type": "application/json",
     },
@@ -96,6 +102,14 @@ const QuotationDetail = (props) => {
         type: SET_CONDITION,
         payload: condition,
       });
+  };
+
+  const availableCurrencies = summary?.offerCurrency?.uiConfigResult?.items || [];
+  const selectedKey = summary?.offerCurrency?.result;
+  const selectedCurrency = availableCurrencies.find((c) => c.key === selectedKey) || {
+    key: 1,
+    text: "USD",
+    icon: "dollar",
   };
 
   return (
@@ -170,7 +184,7 @@ const QuotationDetail = (props) => {
             <Header as="h2">Summary</Header>
             <Segment.Group raised>
               <Segment>
-                <ProductCodeTable conditions={conditions} />
+                <ProductCodeTable conditions={conditions} icon={selectedCurrency.icon} />
                 <Table striped compact celled color="grey">
                   <Table.Header>
                     <Table.Row>
@@ -181,11 +195,17 @@ const QuotationDetail = (props) => {
                   <Table.Body>
                     <Table.Row>
                       <Table.Cell>One-time charge</Table.Cell>
-                      <Table.Cell> € {summary.subtotal_onetime_conv.toLocaleString()} </Table.Cell>
+                      <Table.Cell>
+                        <Icon name={selectedCurrency.icon} />{" "}
+                        {summary.subtotal_onetime_conv.toLocaleString()}{" "}
+                      </Table.Cell>
                     </Table.Row>
                     <Table.Row>
                       <Table.Cell>Annual Fee</Table.Cell>
-                      <Table.Cell> € {summary.subtotal_annual_conv.toLocaleString()} </Table.Cell>
+                      <Table.Cell>
+                        <Icon name={selectedCurrency.icon} />{" "}
+                        {summary.subtotal_annual_conv.toLocaleString()}{" "}
+                      </Table.Cell>
                     </Table.Row>
                   </Table.Body>
                 </Table>
@@ -252,14 +272,16 @@ const QuotationDetail = (props) => {
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.bigmac_onetime_conv.toLocaleString()}
+                      <Icon name={selectedCurrency.icon} />{" "}
+                      {summary.bigmac_onetime_conv.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>License fee</Statistic.Label>
                   </Statistic>
                   <Divider />
                   <Statistic size="mini" color="orange">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.bigmac_annual_conv.toLocaleString()}
+                      <Icon name={selectedCurrency.icon} />{" "}
+                      {summary.bigmac_annual_conv.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>Maintenance fee</Statistic.Label>
                   </Statistic>

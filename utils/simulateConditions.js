@@ -1,6 +1,6 @@
 import jsonata from "jsonata";
 
-const AUTO_PARAM_REGEX = /^[a-z]+[a-zA-Z0-9]+$/;
+export const AUTO_PARAM_REGEX = /^[a-z]+[a-zA-Z0-9]+$/;
 
 export default function simulateConditions(conditions, configs) {
   let iterationalResult = conditions.map((c) => ({ ...c, result: 0, errorText: "" }));

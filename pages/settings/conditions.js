@@ -343,7 +343,7 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
   );
 }
 
-function convertToString(conditions) {
+function convertConditionsToJSON(conditions) {
   return JSON.stringify(
     conditions.filter((c) => !c.DELETED),
     (key, value) => {
@@ -444,7 +444,7 @@ export default function CategorySettingPage(props) {
           onTextMode={
             isTechnical &&
             (() => {
-              setJSONConditions(convertToString(conditions));
+              setJSONConditions(convertConditionsToJSON(conditions));
               setEditModalOpen(true);
             })
           }

@@ -4,22 +4,11 @@ import { Item, Flag, Label, Icon, Button, Comment, Header, Grid } from "semantic
 import { getLogoURL } from "../utils/media";
 
 const icons = ["eur", "usd"];
-const PRODUCT_COLORS = {
-  "Fit-Prime": "orange",
-  "Fit-Parts": "yellow",
-  "Fit-Service": "teal",
-  "Fit-Rent": "violet",
-  "Fit-Lease": "pink",
-  "Fit-Fleet": "grey",
-};
 
 const QuotationItem = ({ quotation }) => {
   const router = useRouter();
   const { conditions = [], values, summary, createdAt, createdByFullName } = quotation;
   const printableCreatedAt = new Date(createdAt).toDateString();
-  const activeProducts = [
-    ...new Set(conditions.filter((c) => c.productCode && c.result > 0 && PRODUCT_COLORS[c.name]).map((c) => c.name)),
-  ];
 
   return (
     <Item>
@@ -55,9 +44,16 @@ const QuotationItem = ({ quotation }) => {
           </Grid>
         </Item.Description>
         <Item.Extra>
-          {activeProducts.map((name) => (
-            <Label key={name} color={PRODUCT_COLORS[name]} icon="check circle" content={name} />
-          ))}
+          {conditions
+            .filter((c) => c.productCode && c.result > 0 && c.uiConfigResult?.color)
+            .map((c) => (
+              <Label
+                key={c.name}
+                color={c.uiConfigResult.color}
+                icon="check circle"
+                content={c.name}
+              />
+            ))}
           <Button
             icon
             labelPosition="right"
