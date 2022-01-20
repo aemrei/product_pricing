@@ -1,5 +1,5 @@
 import React from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Input } from "semantic-ui-react";
 
 function DropdownField({ condition, setCondition, readOnly, withLabel = undefined }) {
   const { remarks, uiConfigResult } = condition;
@@ -12,18 +12,18 @@ function DropdownField({ condition, setCondition, readOnly, withLabel = undefine
       options={options}
       value={condition.manual || 0}
       onChange={(e, { value }) => setCondition({ ...condition, manual: value })}
-      search
+      search={!readOnly}
     />
   );
 }
 
-function NumericField({ condition, setCondition, readOnly, withLabel = undefined }) {
+function NumericField({ condition, setCondition, readOnly }) {
   const { remarks } = condition;
   return (
-    <Form.Input
+    <Input
       readOnly={readOnly}
       fluid
-      label={withLabel && remarks}
+      label={condition.unit || null}
       value={condition.manual || ""}
       onChange={(e, { value }) => setCondition({ ...condition, manual: value })}
     />

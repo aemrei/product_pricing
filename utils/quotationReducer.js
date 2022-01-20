@@ -6,16 +6,20 @@ export const SET_PROPERTY = "SET_PROPERTY";
 export const RESET = "RESET";
 
 function getSummary(conditions) {
-  function getOverall(name, type) {
+  function getOverall(category, name, type) {
     return Math.round(
-      conditions.find((c) => c.category === "Overall" && c.name === name && c.type === type).result,
+      conditions.find((c) => c.category === category && c.name === name && c.type === type)?.result,
     );
   }
   return {
-    bigmac_onetime_eur: getOverall("Onetime", "EUR"),
-    bigmac_annual_eur: getOverall("Annual", "EUR"),
-    bigmac_onetime_usd: getOverall("Onetime", "USD"),
-    bigmac_annual_usd: getOverall("Annual", "USD"),
+    subtotal_onetime_conv: getOverall("Subtotal", "Onetime", "CONVERTED"),
+    subtotal_annual_conv: getOverall("Subtotal", "Annual", "CONVERTED"),
+    bigmac_onetime_eur: getOverall("Overall", "Onetime", "EUR"),
+    bigmac_annual_eur: getOverall("Overall", "Annual", "EUR"),
+    bigmac_onetime_usd: getOverall("Overall", "Onetime", "USD"),
+    bigmac_annual_usd: getOverall("Overall", "Annual", "USD"),
+    bigmac_onetime_conv: getOverall("Overall", "Onetime", "CONVERTED"),
+    bigmac_annual_conv: getOverall("Overall", "Annual", "CONVERTED"),
   };
 }
 

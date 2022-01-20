@@ -18,7 +18,6 @@ import {
   Message,
 } from "semantic-ui-react";
 import SaveButtons from "./SaveButtons";
-import SubConditionTable from "./SubConditionTable";
 import ProductCodeTable from "./ProductCodeTable";
 import {
   quotationReducer,
@@ -118,7 +117,9 @@ const QuotationDetail = (props) => {
                     value={values.customerName}
                     onChange={(e, { value }) => setValue("customerName", value)}
                   />
-                  <Form.Select
+                  <Form.Dropdown
+                    button
+                    search={enableModifications}
                     readOnly={!enableModifications}
                     label="Country of customer"
                     value={values.country}
@@ -166,36 +167,28 @@ const QuotationDetail = (props) => {
                 </Table>
               </Fragment>
             ))}
-            <Header as="h2">Fit-EM Modules</Header>
-            <Segment>
-              <SubConditionTable
-                readOnly={!enableModifications}
-                categories="Product"
-                conditions={conditions}
-                setCondition={setCondition}
-              />
-            </Segment>
-            <Header as="h2">Interfaces</Header>
-            <Segment>
-              <SubConditionTable
-                readOnly={!enableModifications}
-                categories="Interface"
-                conditions={conditions}
-                setCondition={setCondition}
-              />
-            </Segment>
-            <Header as="h2">Others</Header>
-            <Segment>
-              <SubConditionTable
-                readOnly={!enableModifications}
-                categories={["Subtotal", "OtherFee"]}
-                conditions={conditions}
-                setCondition={setCondition}
-              />
-            </Segment>
             <Header as="h2">Summary</Header>
             <Segment.Group raised>
               <Segment>
+                <ProductCodeTable conditions={conditions} />
+                <Table striped compact celled color="grey">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Prices</Table.HeaderCell>
+                      <Table.HeaderCell>Total</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>One-time charge</Table.Cell>
+                      <Table.Cell> € {summary.subtotal_onetime_conv.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Annual Fee</Table.Cell>
+                      <Table.Cell> € {summary.subtotal_annual_conv.toLocaleString()} </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
                 <Table striped compact celled color="green">
                   <Table.Header>
                     <Table.Row>
@@ -217,7 +210,6 @@ const QuotationDetail = (props) => {
                     </Table.Row>
                   </Table.Body>
                 </Table>
-                <ProductCodeTable conditions={conditions} />
               </Segment>
             </Segment.Group>
             <Segment>
@@ -260,14 +252,14 @@ const QuotationDetail = (props) => {
                 <Segment textAlign="center">
                   <Statistic size="tiny" color="blue">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.bigmac_onetime_eur.toLocaleString()}
+                      <Icon name="eur" /> {summary.bigmac_onetime_conv.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>License fee</Statistic.Label>
                   </Statistic>
                   <Divider />
                   <Statistic size="mini" color="orange">
                     <Statistic.Value>
-                      <Icon name="eur" /> {summary.bigmac_annual_eur.toLocaleString()}
+                      <Icon name="eur" /> {summary.bigmac_annual_conv.toLocaleString()}
                     </Statistic.Value>
                     <Statistic.Label>Maintenance fee</Statistic.Label>
                   </Statistic>

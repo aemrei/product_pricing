@@ -200,16 +200,12 @@ function ConditionsTable({ conditions, isTechnical, updateField, removeLine, run
                     )}
                     {isTechnical && (
                       <Table.Cell collapsing>
-                        {c.isStatistical ? (
-                          <span>{c.manual}</span>
-                        ) : (
-                          <NumericField
-                            name="manual"
-                            row={c}
-                            isTechnical={isTechnical}
-                            updateField={updateField}
-                          />
-                        )}
+                        <NumericField
+                          name="manual"
+                          row={c}
+                          isTechnical={isTechnical}
+                          updateField={updateField}
+                        />
                       </Table.Cell>
                     )}
                     {isTechnical && (

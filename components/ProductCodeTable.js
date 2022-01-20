@@ -17,7 +17,7 @@ export default function ProductCodeTable({ conditions }) {
           <Table.Row key={c._id}>
             <Table.Cell>{c.productCode}</Table.Cell>
             <Table.Cell>{c.name}</Table.Cell>
-            <Table.Cell>€ {c.result.toLocaleString()}</Table.Cell>
+            <Table.Cell>€ {Math.round(c.result).toLocaleString()}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

@@ -1,12 +1,23 @@
 import React from "react";
 import { Button, Container, Form, Header, Icon, Label, Popup, Tab, Table } from "semantic-ui-react";
 
+function printValue(value) {
+  if(Array.isArray(value)) {
+    return "[Array]";
+  } else if (typeof value === "object") {
+    return "[Object]";
+  } else if (typeof value === "string") {
+    return `"${value}"`;
+  }
+  return value + "";
+}
+
 function ConditionParametersTable({ params }) {
   const entries = Object.entries(params);
   const conditions = params.Conditions || []
   return (
     <Container>
-      {entries.map(([name, value]) => <Label key={name}>{name}<Label.Detail>{typeof value === "object" ? "[some object]": value + ""}</Label.Detail></Label>)}
+      {entries.map(([name, value]) => <Label key={name}>{name}<Label.Detail>{printValue(value)}</Label.Detail></Label>)}
       <Table striped compact celled color="grey" size="small">
         <Table.Header>
           <Table.Row>
