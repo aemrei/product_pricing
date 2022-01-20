@@ -212,7 +212,7 @@ const QuotationDetail = (props) => {
                 <Table striped compact celled color="green">
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell>BigMac corrected</Table.HeaderCell>
+                      <Table.HeaderCell>BigMac corrected {summary.discountAmount.result && `after discount` || null}</Table.HeaderCell>
                       <Table.HeaderCell>Euro</Table.HeaderCell>
                       <Table.HeaderCell>Dollar</Table.HeaderCell>
                     </Table.Row>
